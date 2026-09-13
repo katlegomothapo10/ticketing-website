@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#151515">
+  <meta name="description" content="Design your venue layout with drag and drop.">
+
+  <title>Venue Studio · Ticketing App for Organizers</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/navigation.css">
+  <link rel="stylesheet" href="../css/homepage.css">
+  <link rel="stylesheet" href="../css/curator.css">
+
+  <style>
+    /* ============================================================
+       VENUE STUDIO
+       ============================================================ */
+
+    /* Override curator content padding for full-canvas studio */
+    .curator-content.studio-content {
+      padding: 0;
+      max-width: none;
+    }
+
+    /* Studio shell — toolbar + canvas + inspector */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 220px 1fr 300px;
+      height: calc(100vh - 64px); /* 64px = topbar */
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       TOOLBAR (left)
+       ============================================================ */
+
+    .studio-toolbar {
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      overflow-y: auto;
+      padding: var(--space-5) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .studio-toolbar-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .studio-toolbar-label {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: var(--color-text-faint);
+      margin-bottom: var(--space-1);
+    }
+
+    .studio-tool-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: 10px 12px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      text-align: left;
+      cursor: pointer;
+      transition:
+        border-color var(--transition-fast),
+        background var(--transition-fast),
+        transform var(--transition-fast);
+    }
+
+    .studio-tool-btn:hover {
+      border-color: var(--color-accent);
+      background: var(--color-accent-glow);
+      transform: translateX(2px);
+    }
+
+    .studio-tool-btn svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-accent-dark);
+      flex-shrink: 0;
+    }
+
+    .studio-tool-btn span {
+      flex: 1;
+    }
+
+    /* ============================================================
+       CANVAS (center)
+       ============================================================ */
+
+    .studio-canvas-wrap {
+      position: relative;
+      background: #faf9f6;
+      overflow: hidden;
+      background-image:
+        linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+      cursor: default;
+    }
+
+    .studio-canvas {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    /* Room frame */
+    .studio-frame {
+      position: absolute;
+      left: 40px;
+      top: 40px;
+      right: 40px;
+      bottom: 40px;
+      border: 2px dashed rgba(0, 0, 0, 0.08);
+      border-radius: var(--radius-sm);
+      pointer-events: none;
+    }
+
+    .studio-frame-label {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      font-size: var(--text-2xs);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.25);
+      font-weight: var(--weight-semibold);
+    }
+
+    /* Objects */
+    .studio-object {
+      position: absolute;
+      min-width: 60px;
+      min-height: 40px;
+      background: var(--color-surface);
+      border: 2px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 8px;
+      font-size: var(--text-xs);
+      color: var(--color-text);
+      cursor: move;
+      user-select: none;
+      transition:
+        box-shadow var(--transition-fast),
+        border-color var(--transition-fast);
+      z-index: 1;
+    }
+
+    .studio-object:hover {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px var(--color-accent-glow);
+    }
+
+    .studio-object.is-selected {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px var(--color-accent-glow), var(--shadow-md);
+      z-index: 10;
+    }
+
+    .studio-object.is-dragging {
+      opacity: 0.85;
+      cursor: grabbing;
+      z-index: 100;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .studio-object-name {
+      font-weight: var(--weight-semibold);
+      text-align: center;
+      line-height: 1.2;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .studio-object-meta {
+      font-size: 9px;
+      color: var(--color-text-muted);
+      letter-spacing: 0.3px;
+      margin-top: 2px;
+      text-align: center;
+    }
+
+    /* Resize handle */
+    .studio-object-resize {
+      position: absolute;
+      right: -6px;
+      bottom: -6px;
+      width: 14px;
+      height: 14px;
+      background: var(--color-accent);
+      border: 2px solid #fff;
+      border-radius: 50%;
+      cursor: nwse-resize;
+      z-index: 5;
+      display: none;
+    }
+
+    .studio-object.is-selected .studio-object-resize {
+      display: block;
+    }
+
+    /* Object type variants */
+    .studio-object[data-type="stage"] {
+      background: linear-gradient(135deg, #2c2418, #151515);
+      color: #f5f1ea;
+      border-color: #151515;
+    }
+
+    .studio-object[data-type="stage"] .studio-object-meta {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .studio-object[data-type="bar"],
+    .studio-object[data-type="dj-booth"] {
+      background: #f5f1ea;
+      border-color: #d4c8b4;
+    }
+
+    .studio-object[data-type="dance-floor"] {
+      background: rgba(184, 148, 74, 0.08);
+      border-style: dashed;
+    }
+
+    .studio-object[data-type="lounge"] {
+      background: linear-gradient(135deg, rgba(216, 208, 196, 0.3), rgba(216, 208, 196, 0.1));
+      border-color: var(--color-platinum);
+    }
+
+    .studio-object[data-type="booth"] {
+      background: linear-gradient(135deg, rgba(203, 163, 75, 0.15), rgba(203, 163, 75, 0.05));
+      border-color: var(--color-gold-tier);
+    }
+
+    .studio-object[data-type="table"] {
+      background: linear-gradient(135deg, rgba(184, 192, 200, 0.2), rgba(184, 192, 200, 0.05));
+      border-color: var(--color-silver);
+      border-radius: 50%;
+      padding: 8px;
+    }
+
+    .studio-object[data-type="seat"] {
+      background: var(--color-surface);
+      border-radius: var(--radius-xs);
+      min-width: 40px;
+      min-height: 40px;
+    }
+
+    /* Canvas info bar (bottom of canvas) */
+    .studio-info {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      display: flex;
+      gap: var(--space-4);
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-md);
+      font-size: var(--text-xs);
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .studio-info strong {
+      font-weight: var(--weight-semibold);
+      color: var(--color-text);
+    }
+
+    .studio-info-label {
+      color: var(--color-text-muted);
+    }
+
+    /* Canvas actions (top-right) */
+    .studio-actions {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: var(--space-2);
+      z-index: 50;
+    }
+
+    .studio-actions .btn {
+      height: 36px;
+      font-size: var(--text-xs);
+    }
+
+    /* Empty state */
+    .studio-empty {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      color: var(--color-text-faint);
+    }
+
+    .studio-empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-3);
+      opacity: 0.5;
+    }
+
+    .studio-empty h3 {
+      font-family: var(--font-serif);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-regular);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    .studio-empty p {
+      font-size: var(--text-sm);
+      max-width: 320px;
+      line-height: var(--leading-relaxed);
+    }
+
+    /* ============================================================
+       INSPECTOR (right)
+       ============================================================ */
+
+    .studio-inspector {
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      overflow-y: auto;
+      padding: var(--space-5) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .studio-inspector-header {
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .studio-inspector-header h3 {
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      font-weight: var(--weight-regular);
+      color: var(--color-text);
+      margin: 0 0 4px 0;
+    }
+
+    .studio-inspector-header p {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+
+    .studio-inspector-empty {
+      padding: var(--space-8) var(--space-4);
+      text-align: center;
+      color: var(--color-text-faint);
+      font-size: var(--text-sm);
+      line-height: var(--leading-relaxed);
+    }
+
+    .studio-inspector-empty svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: var(--space-3);
+      opacity: 0.4;
+    }
+
+    .studio-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .studio-field label {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-wider);
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+
+    .studio-field input,
+    .studio-field select {
+      height: 38px;
+      padding: 0 12px;
+      font-size: var(--text-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .studio-field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    /* Inspector actions */
+    .studio-inspector-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .studio-inspector-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      height: 38px;
+      border-radius: var(--radius-sm);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-medium);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .studio-inspector-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .studio-inspector-btn.is-secondary {
+      background: transparent;
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+    }
+
+    .studio-inspector-btn.is-secondary:hover {
+      background: var(--color-surface-2);
+    }
+
+    .studio-inspector-btn.is-danger {
+      background: transparent;
+      border: 1px solid var(--color-danger);
+      color: var(--color-danger);
+    }
+
+    .studio-inspector-btn.is-danger:hover {
+      background: var(--color-danger);
+      color: #fff;
+    }
+
+    /* Studio toast */
+    .studio-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-dark);
+      color: var(--color-text-inverse);
+      padding: 12px 20px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      z-index: 9999;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+
+    @media (max-width: 1100px) {
+      .studio-shell {
+        grid-template-columns: 180px 1fr;
+      }
+
+      .studio-inspector {
+        position: fixed;
+        top: 64px;
+        right: 0;
+        bottom: 0;
+        width: 320px;
+        transform: translateX(100%);
+        transition: transform var(--transition-base);
+        z-index: 200;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .studio-inspector.is-open {
+        transform: translateX(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .studio-toolbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        flex-direction: row;
+        align-items: center;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: var(--space-3);
+        border-right: none;
+        border-top: 1px solid var(--color-border);
+        z-index: 150;
+      }
+
+      .studio-toolbar-section {
+        flex-direction: row;
+        gap: var(--space-2);
+      }
+
+      .studio-toolbar-label {
+        display: none;
+      }
+
+      .studio-tool-btn {
+        flex-shrink: 0;
+        padding: 8px 12px;
+        font-size: var(--text-xs);
+      }
+
+      .studio-tool-btn span {
+        display: none;
+      }
+
+      .studio-canvas-wrap {
+        padding-bottom: 80px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="curator-app">
+
+    <!-- ============================================================
+         SIDEBAR (same as dashboard)
+         ============================================================ -->
+    <aside class="curator-sidebar" aria-label="Curator navigation">
+
+      <div class="curator-sidebar-brand">
+        <a href="../index.html" class="logo" aria-label="Ticketing App home">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+      </div>
+
+      <div class="curator-picker">
+        <span class="curator-picker-label">Organizer</span>
+        <button class="curator-picker-btn" type="button">
+          <span class="curator-picker-avatar" aria-hidden="true">SE</span>
+          <span class="curator-picker-info">
+            <span class="curator-picker-name">Sunset Events Co.</span>
+            <span class="curator-picker-role">Verified organizer</span>
+          </span>
+        </button>
+      </div>
+
+      <ul class="curator-nav">
+
+        <li class="curator-nav-section">Overview</li>
+        <li><a class="curator-nav-link" href="index.html">Dashboard</a></li>
+        <li><a class="curator-nav-link" href="events.html">Events</a></li>
+        <li><a class="curator-nav-link" href="analytics.html">Analytics</a></li>
+
+        <li class="curator-nav-section">Manage</li>
+        <li><a class="curator-nav-link is-active" href="venue-studio.html">Venue Studio</a></li>
+        <li><a class="curator-nav-link" href="inventory.html">Inventory</a></li>
+        <li><a class="curator-nav-link" href="check-in.html">Check-in</a></li>
+
+        <li class="curator-nav-section">Financials</li>
+        <li><a class="curator-nav-link" href="finances.html">Finances</a></li>
+        <li><a class="curator-nav-link" href="payouts.html">Payouts</a></li>
+
+      </ul>
+
+      <div class="curator-sidebar-footer">
+        <div class="curator-sidebar-user">
+          <span class="curator-user-avatar" aria-hidden="true">SM</span>
+          <span class="curator-user-info">
+            <span class="curator-user-name">Sipho Mokoena</span>
+            <span class="curator-user-role">Owner</span>
+          </span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+    <div class="curator-main">
+
+      <!-- Topbar -->
+      <div class="curator-topbar">
+
+        <div class="curator-topbar-left">
+          <h2 class="curator-topbar-title">Venue Studio</h2>
+          <span class="badge" style="background: var(--color-accent-glow); color: var(--color-accent-dark);">
+            Draft
+          </span>
+        </div>
+
+        <div class="curator-topbar-right">
+          <button class="btn btn-ghost btn-sm" id="previewBtn" type="button">
+            Preview
+          </button>
+          <button class="btn btn-secondary btn-sm" id="saveLayoutBtn" type="button">
+            Save layout
+          </button>
+          <button class="btn btn-primary btn-sm" id="applyLayoutBtn" type="button">
+            Apply to event
+          </button>
+        </div>
+
+      </div>
+
+      <div class="curator-content studio-content">
+
+        <!-- ============================================================
+             STUDIO SHELL
+             ============================================================ -->
+        <div class="studio-shell">
+
+          <!-- ============================================================
+               TOOLBAR
+               ============================================================ -->
+          <aside class="studio-toolbar" aria-label="Venue tools">
+
+            <div class="studio-toolbar-section">
+              <span class="studio-toolbar-label">Seating</span>
+
+              <button class="studio-tool-btn" data-add-type="table" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+                <span>Table</span>
+              </button>
+
+              <button class="studio-tool-btn" data-add-type="booth" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="6" width="16" height="12" rx="2"/></svg>
+                <span>Booth</span>
+              </button>
+
+              <button class="studio-tool-btn" data-add-type="lounge" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M5 20V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v12"/></svg>
+                <span>Lounge</span>
+              </button>
+
+              <button class="studio-tool-btn" data-add-type="seat" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+                <span>Seat</span>
+              </button>
+            </div>
+
+            <div class="studio-toolbar-section">
+              <span class="studio-toolbar-label">Venue</span>
+
+              <button class="studio-tool-btn" data-add-type="stage" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="10" rx="2"/></svg>
+                <span>Stage</span>
+              </button>
+
+              <button class="studio-tool-btn" data-add-type="bar" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16l-8 8-8-8zM12 12v8M8 20h8"/></svg>
+                <span>Bar</span>
+              </button>
+
+              <button class="studio-tool-btn" data-add-type="dj-booth" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="8" rx="2"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
+                <span>DJ booth</span>
+              </button>
+
+              <button class="studio-tool-btn" data-add-type="dance-floor" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/></svg>
+                <span>Dance floor</span>
+              </button>
+            </div>
+
+            <div class="studio-toolbar-section">
+              <span class="studio-toolbar-label">Layout</span>
+
+              <button class="studio-tool-btn" id="clearBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                <span>Clear all</span>
+              </button>
+
+              <button class="studio-tool-btn" id="undoBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
+                <span>Undo</span>
+              </button>
+            </div>
+
+          </aside>
+
+          <!-- ============================================================
+               CANVAS
+               ============================================================ -->
+          <div class="studio-canvas-wrap" id="canvasWrap">
+
+            <div class="studio-frame">
+              <span class="studio-frame-label">Venue canvas</span>
+            </div>
+
+            <div class="studio-canvas" id="canvas">
+              <!-- Objects injected here -->
+            </div>
+
+            <!-- Empty state -->
+            <div class="studio-empty" id="emptyState">
+              <div class="studio-empty-icon">🎨</div>
+              <h3>Start designing</h3>
+              <p>Click any tool on the left to add a table, booth, lounge, or stage to the canvas.</p>
+            </div>
+
+            <!-- Info bar -->
+            <div class="studio-info" id="infoBar">
+              <span>
+                <span class="studio-info-label">Objects:</span>
+                <strong id="infoObjects">0</strong>
+              </span>
+              <span>
+                <span class="studio-info-label">Total capacity:</span>
+                <strong id="infoCapacity">0</strong>
+              </span>
+              <span>
+                <span class="studio-info-label">Expected revenue:</span>
+                <strong id="infoRevenue">R0</strong>
+              </span>
+            </div>
+
+            <!-- Actions -->
+            <div class="studio-actions">
+              <button class="btn btn-secondary btn-sm" id="toggleInspectorBtn" type="button" style="display:none;">
+                Inspector
+              </button>
+            </div>
+
+          </div>
+
+          <!-- ============================================================
+               INSPECTOR
+               ============================================================ -->
+          <aside class="studio-inspector" id="inspector" aria-label="Object inspector">
+
+            <div class="studio-inspector-header">
+              <h3>Object</h3>
+              <p>Select an object to edit its properties.</p>
+            </div>
+
+            <div class="studio-inspector-empty" id="inspectorEmpty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M9 9h6v6H9z"/>
+              </svg>
+              <p>Nothing selected yet.</p>
+            </div>
+
+            <div id="inspectorForm" style="display:none;">
+
+              <div class="studio-field">
+                <label for="objName">Name</label>
+                <input type="text" id="objName" placeholder="e.g. Table 01">
+              </div>
+
+              <div class="studio-field-row">
+                <div class="studio-field">
+                  <label for="objCapacity">Capacity</label>
+                  <input type="number" id="objCapacity" min="1" value="1">
+                </div>
+
+                <div class="studio-field">
+                  <label for="objPrice">Price (R)</label>
+                  <input type="number" id="objPrice" min="0" value="0" step="50">
+                </div>
+              </div>
+
+              <div class="studio-field">
+                <label for="objCategory">Category</label>
+                <select id="objCategory">
+                  <option value="general">General</option>
+                  <option value="premium">Premium</option>
+                  <option value="vip">VIP</option>
+                  <option value="platinum">Platinum</option>
+                  <option value="stage">Stage</option>
+                  <option value="facility">Facility</option>
+                </select>
+              </div>
+
+              <div class="studio-field">
+                <label for="objMinSpend">Minimum spend (R)</label>
+                <input type="number" id="objMinSpend" min="0" value="0" step="100">
+              </div>
+
+              <div class="studio-inspector-actions">
+                <button class="studio-inspector-btn is-secondary" id="duplicateObjBtn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  Duplicate
+                </button>
+
+                <button class="studio-inspector-btn is-danger" id="deleteObjBtn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                  </svg>
+                  Delete
+                </button>
+              </div>
+
+            </div>
+
+          </aside>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="../js/currency.js"></script>
+  <script src="../js/fees.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/analytics.js"></script>
+  <script src="../js/navigation.js"></script>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+
+    const studio = {
+      objects: [],       // { id, type, name, x, y, w, h, capacity, price, category, minSpend }
+      selectedId: null,
+      dragging: null,
+      resizing: null,
+      dragOffsetX: 0,
+      dragOffsetY: 0,
+      resizeStartW: 0,
+      resizeStartH: 0,
+      resizeStartX: 0,
+      resizeStartY: 0,
+      history: [],
+      objCounter: 0,
+    };
+
+    const TYPE_DEFAULTS = {
+      table:       { name: "Table",      w: 90,  h: 70,  capacity: 6,   price: 500,  category: "general" },
+      booth:       { name: "Booth",      w: 120, h: 80,  capacity: 8,   price: 1200, category: "premium" },
+      lounge:      { name: "Lounge",     w: 160, h: 100, capacity: 12,  price: 2500, category: "vip" },
+      seat:        { name: "Seat",       w: 44,  h: 44,  capacity: 1,   price: 200,  category: "general" },
+      stage:       { name: "Stage",      w: 320, h: 80,  capacity: 0,   price: 0,    category: "stage" },
+      bar:         { name: "Bar",        w: 140, h: 70,  capacity: 0,   price: 0,    category: "facility" },
+      "dj-booth":  { name: "DJ Booth",   w: 140, h: 60,  capacity: 0,   price: 0,    category: "facility" },
+      "dance-floor": { name: "Dance Floor", w: 220, h: 140, capacity: 0, price: 0,   category: "facility" },
+    };
+
+    const ICON_BY_TYPE = {
+      table: "◯", booth: "▢", lounge: "▤", seat: "▫",
+      stage: "▬", bar: "▬", "dj-booth": "▬", "dance-floor": "▦",
+    };
+
+    /* ============================================================
+       UTILS
+       ============================================================ */
+
+    function fmt(amount) {
+      if (window.Currency && window.Currency.format) {
+        return window.Currency.format(amount);
+      }
+      return `R${Number(amount || 0).toLocaleString()}`;
+    }
+
+    function escapeHTML(str) {
+      if (str == null) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function uid(prefix) {
+      studio.objCounter++;
+      return `${prefix || "obj"}_${Date.now()}_${studio.objCounter}`;
+    }
+
+    function showToast(message) {
+      const existing = document.querySelector(".studio-toast");
+      if (existing) existing.remove();
+      const t = document.createElement("div");
+      t.className = "studio-toast";
+      t.textContent = message;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2400);
+    }
+
+    function track(name, props) {
+      if (window.Analytics && window.Analytics.track) {
+        window.Analytics.track(name, props);
+      }
+    }
+
+    /* ============================================================
+       OBJECT MANAGEMENT
+       ============================================================ */
+
+    function addObject(type, x, y) {
+      const def = TYPE_DEFAULTS[type];
+      if (!def) return;
+
+      // Position default — center-ish with slight offset
+      if (x == null || y == null) {
+        const canvasWrap = document.getElementById("canvasWrap");
+        const w = canvasWrap.clientWidth;
+        const h = canvasWrap.clientHeight;
+        x = Math.max(60, Math.round((w - def.w) / 2 + (Math.random() - 0.5) * 100));
+        y = Math.max(60, Math.round((h - def.h) / 2 + (Math.random() - 0.5) * 100));
+      }
+
+      const obj = {
+        id: uid(type),
+        type: type,
+        name: def.name + " " + (studio.objects.filter(o => o.type === type).length + 1).toString().padStart(2, "0"),
+        x: x,
+        y: y,
+        w: def.w,
+        h: def.h,
+        capacity: def.capacity,
+        price: def.price,
+        category: def.category,
+        minSpend: 0,
+      };
+
+      pushHistory();
+      studio.objects.push(obj);
+      render();
+      selectObject(obj.id);
+      track("studio_add_object", { type });
+      showToast(`Added ${obj.name}`);
+    }
+
+    function removeObject(id) {
+      pushHistory();
+      studio.objects = studio.objects.filter(o => o.id !== id);
+      if (studio.selectedId === id) studio.selectedId = null;
+      render();
+      updateInspector();
+      track("studio_remove_object", { id });
+    }
+
+    function duplicateObject(id) {
+      const obj = studio.objects.find(o => o.id === id);
+      if (!obj) return;
+      pushHistory();
+      const copy = Object.assign({}, obj, {
+        id: uid(obj.type),
+        name: obj.name + " (copy)",
+        x: obj.x + 20,
+        y: obj.y + 20,
+      });
+      studio.objects.push(copy);
+      render();
+      selectObject(copy.id);
+      showToast("Duplicated");
+    }
+
+    function clearAll() {
+      if (!studio.objects.length) return;
+      if (!confirm("Clear all objects from the canvas?")) return;
+      pushHistory();
+      studio.objects = [];
+      studio.selectedId = null;
+      render();
+      updateInspector();
+      showToast("Canvas cleared");
+    }
+
+    function pushHistory() {
+      try {
+        studio.history.push(JSON.stringify(studio.objects));
+        if (studio.history.length > 30) studio.history.shift();
+      } catch (e) {}
+    }
+
+    function undo() {
+      if (!studio.history.length) {
+        showToast("Nothing to undo");
+        return;
+      }
+      try {
+        studio.objects = JSON.parse(studio.history.pop());
+        studio.selectedId = null;
+        render();
+        updateInspector();
+        showToast("Undone");
+      } catch (e) {}
+    }
+
+    /* ============================================================
+       RENDER
+       ============================================================ */
+
+    function render() {
+      const canvas = document.getElementById("canvas");
+      if (!canvas) return;
+
+      // Render objects
+      canvas.innerHTML = studio.objects.map(obj => {
+        const isSelected = obj.id === studio.selectedId;
+        return `
+          <div class="studio-object ${isSelected ? "is-selected" : ""}"
+               data-id="${obj.id}"
+               data-type="${obj.type}"
+               style="left:${obj.x}px; top:${obj.y}px; width:${obj.w}px; height:${obj.h}px;">
+            <div class="studio-object-name">${escapeHTML(obj.name)}</div>
+            <div class="studio-object-meta">
+              ${obj.type === "stage" || obj.type === "bar" || obj.type === "dj-booth" || obj.type === "dance-floor"
+                ? ""
+                : `${obj.capacity} pax · ${fmt(obj.price)}`}
+            </div>
+            <div class="studio-object-resize"></div>
+          </div>
+        `;
+      }).join("");
+
+      // Wire object events
+      canvas.querySelectorAll(".studio-object").forEach(el => {
+        el.addEventListener("mousedown", onObjectMouseDown);
+        el.addEventListener("touchstart", onObjectTouchStart, { passive: false });
+      });
+
+      // Toggle empty state
+      const empty = document.getElementById("emptyState");
+      if (empty) empty.style.display = studio.objects.length === 0 ? "block" : "none";
+
+      updateInfoBar();
+    }
+
+    function selectObject(id) {
+      studio.selectedId = id;
+      document.querySelectorAll(".studio-object").forEach(el => {
+        el.classList.toggle("is-selected", el.dataset.id === id);
+      });
+      updateInspector();
+    }
+
+    function updateInfoBar() {
+      const objCount = studio.objects.length;
+      const capacity = studio.objects.reduce((s, o) => s + (o.capacity || 0), 0);
+      const revenue = studio.objects.reduce((s, o) => s + ((o.capacity || 0) * (o.price || 0)), 0);
+
+      document.getElementById("infoObjects").textContent = objCount;
+      document.getElementById("infoCapacity").textContent = capacity;
+      document.getElementById("infoRevenue").textContent = fmt(revenue);
+    }
+
+    /* ============================================================
+       INSPECTOR
+       ============================================================ */
+
+    function updateInspector() {
+      const empty = document.getElementById("inspectorEmpty");
+      const form = document.getElementById("inspectorForm");
+      const header = document.querySelector(".studio-inspector-header h3");
+
+      const obj = studio.objects.find(o => o.id === studio.selectedId);
+      if (!obj) {
+        empty.style.display = "block";
+        form.style.display = "none";
+        if (header) header.textContent = "Object";
+        return;
+      }
+
+      empty.style.display = "none";
+      form.style.display = "flex";
+      form.style.flexDirection = "column";
+      form.style.gap = "var(--space-4)";
+      if (header) header.textContent = obj.name || "Object";
+
+      document.getElementById("objName").value = obj.name || "";
+      document.getElementById("objCapacity").value = obj.capacity || 0;
+      document.getElementById("objPrice").value = obj.price || 0;
+      document.getElementById("objCategory").value = obj.category || "general";
+      document.getElementById("objMinSpend").value = obj.minSpend || 0;
+    }
+
+    function wireInspector() {
+      const nameIn = document.getElementById("objName");
+      const capIn = document.getElementById("objCapacity");
+      const priceIn = document.getElementById("objPrice");
+      const catIn = document.getElementById("objCategory");
+      const minIn = document.getElementById("objMinSpend");
+      const dupBtn = document.getElementById("duplicateObjBtn");
+      const delBtn = document.getElementById("deleteObjBtn");
+
+      function onChange() {
+        const obj = studio.objects.find(o => o.id === studio.selectedId);
+        if (!obj) return;
+
+        obj.name = nameIn.value;
+        obj.capacity = Number(capIn.value) || 0;
+        obj.price = Number(priceIn.value) || 0;
+        obj.category = catIn.value;
+        obj.minSpend = Number(minIn.value) || 0;
+
+        // Update visual without re-rendering (lighter)
+        const el = document.querySelector(`.studio-object[data-id="${obj.id}"]`);
+        if (el) {
+          const nameEl = el.querySelector(".studio-object-name");
+          if (nameEl) nameEl.textContent = obj.name;
+          const metaEl = el.querySelector(".studio-object-meta");
+          if (metaEl) {
+            if (obj.type === "stage" || obj.type === "bar" || obj.type === "dj-booth" || obj.type === "dance-floor") {
+              metaEl.textContent = "";
+            } else {
+              metaEl.textContent = `${obj.capacity} pax · ${fmt(obj.price)}`;
+            }
+          }
+        }
+        const header = document.querySelector(".studio-inspector-header h3");
+        if (header) header.textContent = obj.name;
+
+        updateInfoBar();
+      }
+
+      [nameIn, capIn, priceIn, catIn, minIn].forEach(el => {
+        if (el) el.addEventListener("input", onChange);
+      });
+
+      dupBtn?.addEventListener("click", () => {
+        if (studio.selectedId) duplicateObject(studio.selectedId);
+      });
+
+      delBtn?.addEventListener("click", () => {
+        if (studio.selectedId) {
+          removeObject(studio.selectedId);
+          studio.selectedId = null;
+          updateInspector();
+        }
+      });
+    }
+
+    /* ============================================================
+       DRAG
+       ============================================================ */
+
+    function onObjectMouseDown(e) {
+      if (e.target.closest(".studio-object-resize")) {
+        startResize(e, e.target.closest(".studio-object").dataset.id);
+        return;
+      }
+
+      const el = e.currentTarget;
+      const id = el.dataset.id;
+      const obj = studio.objects.find(o => o.id === id);
+      if (!obj) return;
+
+      selectObject(id);
+
+      pushHistory();
+      studio.dragging = id;
+      studio.dragOffsetX = e.clientX - obj.x;
+      studio.dragOffsetY = e.clientY - obj.y;
+      el.classList.add("is-dragging");
+
+      e.preventDefault();
+
+      document.addEventListener("mousemove", onObjectMouseMove);
+      document.addEventListener("mouseup", onObjectMouseUp);
+    }
+
+    function onObjectMouseMove(e) {
+      if (!studio.dragging) return;
+      const obj = studio.objects.find(o => o.id === studio.dragging);
+      if (!obj) return;
+
+      obj.x = Math.max(0, e.clientX - studio.dragOffsetX);
+      obj.y = Math.max(0, e.clientY - studio.dragOffsetY);
+
+      const el = document.querySelector(`.studio-object[data-id="${obj.id}"]`);
+      if (el) {
+        el.style.left = obj.x + "px";
+        el.style.top = obj.y + "px";
+      }
+    }
+
+    function onObjectMouseUp() {
+      if (studio.dragging) {
+        const el = document.querySelector(`.studio-object[data-id="${studio.dragging}"]`);
+        if (el) el.classList.remove("is-dragging");
+        studio.dragging = null;
+      }
+      document.removeEventListener("mousemove", onObjectMouseMove);
+      document.removeEventListener("mouseup", onObjectMouseUp);
+    }
+
+    /* ---- Touch drag ---- */
+
+    function onObjectTouchStart(e) {
+      if (e.touches.length !== 1) return;
+      const el = e.currentTarget;
+      const id = el.dataset.id;
+      const obj = studio.objects.find(o => o.id === id);
+      if (!obj) return;
+
+      const t = e.touches[0];
+      selectObject(id);
+      pushHistory();
+
+      studio.dragging = id;
+      studio.dragOffsetX = t.clientX - obj.x;
+      studio.dragOffsetY = t.clientY - obj.y;
+
+      document.addEventListener("touchmove", onObjectTouchMove, { passive: false });
+      document.addEventListener("touchend", onObjectTouchEnd);
+      e.preventDefault();
+    }
+
+    function onObjectTouchMove(e) {
+      if (!studio.dragging || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const obj = studio.objects.find(o => o.id === studio.dragging);
+      if (!obj) return;
+
+      obj.x = Math.max(0, t.clientX - studio.dragOffsetX);
+      obj.y = Math.max(0, t.clientY - studio.dragOffsetY);
+
+      const el = document.querySelector(`.studio-object[data-id="${obj.id}"]`);
+      if (el) {
+        el.style.left = obj.x + "px";
+        el.style.top = obj.y + "px";
+      }
+      e.preventDefault();
+    }
+
+    function onObjectTouchEnd() {
+      studio.dragging = null;
+      document.removeEventListener("touchmove", onObjectTouchMove);
+      document.removeEventListener("touchend", onObjectTouchEnd);
+    }
+
+    /* ============================================================
+       RESIZE
+       ============================================================ */
+
+    function startResize(e, id) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const obj = studio.objects.find(o => o.id === id);
+      if (!obj) return;
+
+      pushHistory();
+
+      studio.resizing = id;
+      studio.resizeStartW = obj.w;
+      studio.resizeStartH = obj.h;
+      studio.resizeStartX = e.clientX;
+      studio.resizeStartY = e.clientY;
+
+      document.addEventListener("mousemove", onResizeMove);
+      document.addEventListener("mouseup", onResizeEnd);
+    }
+
+    function onResizeMove(e) {
+      if (!studio.resizing) return;
+      const obj = studio.objects.find(o => o.id === studio.resizing);
+      if (!obj) return;
+
+      obj.w = Math.max(40, studio.resizeStartW + (e.clientX - studio.resizeStartX));
+      obj.h = Math.max(40, studio.resizeStartH + (e.clientY - studio.resizeStartY));
+
+      const el = document.querySelector(`.studio-object[data-id="${obj.id}"]`);
+      if (el) {
+        el.style.width = obj.w + "px";
+        el.style.height = obj.h + "px";
+      }
+    }
+
+    function onResizeEnd() {
+      studio.resizing = null;
+      document.removeEventListener("mousemove", onResizeMove);
+      document.removeEventListener("mouseup", onResizeEnd);
+    }
+
+    /* ============================================================
+       SAVE / LOAD / PUBLISH
+       ============================================================ */
+
+    function saveLayout() {
+      try {
+        localStorage.setItem("ticketing_app:venueLayout", JSON.stringify({
+          objects: studio.objects,
+          savedAt: Date.now(),
+        }));
+        showToast("Layout saved to this browser.");
+        track("studio_save_layout", { objectCount: studio.objects.length });
+      } catch (e) {
+        showToast("Could not save layout.");
+      }
+    }
+
+    function loadLayout() {
+      try {
+        const raw = localStorage.getItem("ticketing_app:venueLayout");
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data && Array.isArray(data.objects)) {
+          studio.objects = data.objects;
+          render();
+        }
+      } catch (e) {}
+    }
+
+    function applyToEvent() {
+      if (studio.objects.length === 0) {
+        showToast("Add at least one object before applying.");
+        return;
+      }
+      try {
+        localStorage.setItem("ticketing_app:venueLayout", JSON.stringify({
+          objects: studio.objects,
+          savedAt: Date.now(),
+        }));
+      } catch (e) {}
+
+      track("studio_apply_layout", {
+        objectCount: studio.objects.length,
+        totalCapacity: studio.objects.reduce((s, o) => s + (o.capacity || 0), 0),
+      });
+
+      showToast("Layout applied. Returning to dashboard…");
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1400);
+    }
+
+    function preview() {
+      showToast("Preview mode is the customer view — see " + studio.objects.length + " objects.");
+      track("studio_preview", { objectCount: studio.objects.length });
+    }
+
+    /* ============================================================
+       WIRE TOOLBAR
+       ============================================================ */
+
+    function wireToolbar() {
+      document.querySelectorAll("[data-add-type]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          addObject(btn.dataset.addType);
+        });
+      });
+
+      document.getElementById("clearBtn")?.addEventListener("click", clearAll);
+      document.getElementById("undoBtn")?.addEventListener("click", undo);
+      document.getElementById("saveLayoutBtn")?.addEventListener("click", saveLayout);
+      document.getElementById("applyLayoutBtn")?.addEventListener("click", applyToEvent);
+      document.getElementById("previewBtn")?.addEventListener("click", preview);
+    }
+
+    /* ============================================================
+       DESELECT ON CANVAS CLICK
+       ============================================================ */
+
+    function wireCanvasClick() {
+      const canvasWrap = document.getElementById("canvasWrap");
+      canvasWrap?.addEventListener("click", (e) => {
+        if (e.target.closest(".studio-object")) return;
+        studio.selectedId = null;
+        document.querySelectorAll(".studio-object").forEach(el => el.classList.remove("is-selected"));
+        updateInspector();
+      });
+    }
+
+    /* ============================================================
+       BOOT
+       ============================================================ */
+
+    function init() {
+      wireToolbar();
+      wireInspector();
+      wireCanvasClick();
+      loadLayout();
+      render();
+
+      // Add a starter layout if empty
+      if (studio.objects.length === 0) {
+        // Add stage
+        const stage = {
+          id: uid("stage"), type: "stage", name: "Main Stage",
+          x: 300, y: 40, w: 400, h: 80,
+          capacity: 0, price: 0, category: "stage", minSpend: 0,
+        };
+        studio.objects.push(stage);
+
+        // A few tables
+        [[100, 200], [240, 200], [380, 200], [520, 200]].forEach((pos, i) => {
+          studio.objects.push({
+            id: uid("table"), type: "table",
+            name: `Table ${String(i + 1).padStart(2, "0")}`,
+            x: pos[0], y: pos[1], w: 90, h: 70,
+            capacity: 6, price: 500, category: "general", minSpend: 0,
+          });
+        });
+
+        // One lounge
+        studio.objects.push({
+          id: uid("lounge"), type: "lounge", name: "VIP Lounge",
+          x: 520, y: 340, w: 180, h: 100,
+          capacity: 12, price: 2500, category: "vip", minSpend: 5000,
+        });
+
+        // Bar
+        studio.objects.push({
+          id: uid("bar"), type: "bar", name: "Bar",
+          x: 100, y: 380, w: 140, h: 70,
+          capacity: 0, price: 0, category: "facility", minSpend: 0,
+        });
+
+        render();
+      }
+
+      track("page_view", { page: "curator_venue_studio" });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
