@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f5f2">
+  <meta name="description" content="Manage your tickets, orders, and preferences.">
+
+  <title>My account · Ticketing App</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/navigation.css">
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/account.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header" id="siteHeader">
+    <nav class="navbar" aria-label="Main navigation">
+
+      <a href="index.html" class="logo" aria-label="Ticketing App home">
+        <span class="logo-mark" aria-hidden="true">TA</span>
+        <span class="logo-text">Ticketing<span>App</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Discover</a></li>
+        <li><a href="events.html" class="nav-link">Events</a></li>
+        <li><a href="venues.html" class="nav-link">Venues</a></li>
+        <li><a href="curator/index.html" class="nav-link">For organizers</a></li>
+      </ul>
+
+      <div class="nav-actions">
+
+        <a href="account.html" class="nav-auth">My account</a>
+
+        <a href="curator/create-event.html" class="nav-cta">
+          Create an event
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobileDrawer"
+        >
+          <span class="nav-toggle-icon" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+
+      </div>
+
+    </nav>
+  </header>
+
+  <!-- ============================================================
+       MOBILE DRAWER
+       ============================================================ -->
+  <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+  <aside
+    class="mobile-drawer"
+    id="mobileDrawer"
+    aria-label="Mobile navigation"
+    aria-hidden="true"
+  >
+    <div class="mobile-drawer-header">
+      <span class="logo-text" style="font-weight:700;">Menu</span>
+      <button class="mobile-drawer-close" id="navClose" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="mobile-drawer-body">
+      <ul class="mobile-nav-list">
+        <li><a href="index.html" class="mobile-nav-link">Discover</a></li>
+        <li><a href="events.html" class="mobile-nav-link">Events</a></li>
+        <li><a href="venues.html" class="mobile-nav-link">Venues</a></li>
+        <li><a href="account.html" class="mobile-nav-link">My account</a></li>
+        <li><a href="curator/index.html" class="mobile-nav-link">For organizers</a></li>
+      </ul>
+
+      <div class="mobile-actions">
+        <a href="curator/create-event.html" class="btn btn-primary btn-block">
+          Create an event
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN
+       ============================================================ -->
+  <main>
+
+    <section class="account-page">
+      <div class="container">
+
+        <!-- ============================================================
+             HEADER
+             ============================================================ -->
+        <div class="account-header">
+
+          <ol class="breadcrumb">
+            <li><a href="index.html">Home</a></li>
+            <li>My account</li>
+          </ol>
+
+          <h1>My account</h1>
+          <p>
+            Manage your tickets, view orders, and update
+            your preferences.
+          </p>
+
+        </div>
+
+        <!-- ============================================================
+             LAYOUT
+             ============================================================ -->
+        <div class="account-layout">
+
+          <!-- ============================================================
+               SIDEBAR
+               ============================================================ -->
+          <aside class="account-sidebar" aria-label="Account navigation">
+
+            <div class="account-profile">
+              <div class="account-avatar" id="accountAvatar">?</div>
+              <div>
+                <h4 class="account-user-name" id="accountUserName">Loading…</h4>
+                <p class="account-user-email" id="accountUserEmail"></p>
+              </div>
+            </div>
+
+            <ul class="account-nav">
+              <li>
+                <a class="account-nav-link" data-tab="tickets" role="button" tabindex="0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 1 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 1 0 0-4z"/>
+                  </svg>
+                  Tickets
+                </a>
+              </li>
+
+              <li>
+                <a class="account-nav-link" data-tab="orders" role="button" tabindex="0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+                  </svg>
+                  Orders
+                </a>
+              </li>
+
+              <li>
+                <a class="account-nav-link" data-tab="saved" role="button" tabindex="0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                  Saved
+                </a>
+              </li>
+
+              <li>
+                <a class="account-nav-link" data-tab="settings" role="button" tabindex="0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                  </svg>
+                  Settings
+                </a>
+              </li>
+            </ul>
+
+            <div class="account-sidebar-footer">
+              <a class="account-signout" href="#" role="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <path d="m16 17 5-5-5-5M21 12H9"/>
+                </svg>
+                Sign out
+              </a>
+            </div>
+
+          </aside>
+
+          <!-- ============================================================
+               CONTENT
+               ============================================================ -->
+          <div>
+
+            <!-- Mobile tabs -->
+            <div class="account-tabs" role="tablist" aria-label="Account sections">
+              <button class="account-tab" data-tab="tickets" type="button">Tickets</button>
+              <button class="account-tab" data-tab="orders" type="button">Orders</button>
+              <button class="account-tab" data-tab="saved" type="button">Saved</button>
+              <button class="account-tab" data-tab="settings" type="button">Settings</button>
+            </div>
+
+            <!-- ============================================================
+                 PANEL — TICKETS
+                 ============================================================ -->
+            <div class="account-panel" id="panel-tickets">
+
+              <div class="account-panel-header">
+                <h2>My tickets</h2>
+                <p>Your upcoming and past event tickets.</p>
+              </div>
+
+              <div class="tickets-grid" id="ticketsGrid">
+                <!-- Populated by account.js -->
+              </div>
+
+            </div>
+
+            <!-- ============================================================
+                 PANEL — ORDERS
+                 ============================================================ -->
+            <div class="account-panel" id="panel-orders">
+
+              <div class="account-panel-header">
+                <h2>Order history</h2>
+                <p>Every purchase you've made on Ticketing App.</p>
+              </div>
+
+              <div class="orders-table-wrap">
+                <table class="orders-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Order</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Total</th>
+                      <th scope="col"><span class="sr-only">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="ordersTableBody">
+                    <!-- Populated by account.js -->
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+
+            <!-- ============================================================
+                 PANEL — SAVED
+                 ============================================================ -->
+            <div class="account-panel" id="panel-saved">
+
+              <div class="account-panel-header">
+                <h2>Saved events</h2>
+                <p>Events you've bookmarked to view later.</p>
+              </div>
+
+              <div class="saved-grid" id="savedGrid">
+                <!-- Populated by account.js -->
+              </div>
+
+            </div>
+
+            <!-- ============================================================
+                 PANEL — SETTINGS
+                 ============================================================ -->
+            <div class="account-panel" id="panel-settings">
+
+              <div class="account-panel-header">
+                <h2>Settings</h2>
+                <p>Update your profile and preferences.</p>
+              </div>
+
+              <!-- Profile -->
+              <div class="settings-section">
+                <h3>Profile</h3>
+                <p>Your personal information.</p>
+
+                <form class="settings-form" id="profileForm">
+
+                  <div class="settings-form-row">
+                    <div class="form-group">
+                      <label for="settingsFirstName">First name</label>
+                      <input type="text" id="settingsFirstName" autocomplete="given-name">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="settingsLastName">Last name</label>
+                      <input type="text" id="settingsLastName" autocomplete="family-name">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="settingsEmail">Email</label>
+                    <input type="email" id="settingsEmail" autocomplete="email">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="settingsPhone">Phone</label>
+                    <input type="tel" id="settingsPhone" autocomplete="tel">
+                  </div>
+
+                  <div style="display:flex;justify-content:flex-end;gap:8px;">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                  </div>
+
+                </form>
+              </div>
+
+              <!-- Notifications -->
+              <div class="settings-section">
+                <h3>Notifications</h3>
+                <p>Choose what we send you.</p>
+
+                <div class="settings-toggle">
+                  <div class="settings-toggle-text">
+                    <h4>Event updates</h4>
+                    <p>Get notified when events you've saved go on sale.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="notifEvents" name="notifEvents" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+
+                <div class="settings-toggle">
+                  <div class="settings-toggle-text">
+                    <h4>Order reminders</h4>
+                    <p>Receive reminders before event day.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="notifOrders" name="notifOrders" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+
+                <div class="settings-toggle">
+                  <div class="settings-toggle-text">
+                    <h4>Marketing emails</h4>
+                    <p>Occasional offers and recommendations.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="notifMarketing" name="notifMarketing">
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Danger zone -->
+              <div class="settings-section settings-danger">
+                <h3>Danger zone</h3>
+                <p>Irreversible actions.</p>
+                <button class="settings-danger-btn" id="deleteAccountBtn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;" aria-hidden="true">
+                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                  </svg>
+                  Delete account
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <div class="container">
+
+      <div>
+        <a href="index.html" class="logo">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+        <p class="site-footer-tagline">
+          Better ways to experience events. Ticketing, built for how
+          people actually show up.
+        </p>
+      </div>
+
+      <div>
+        <h4>Discover</h4>
+        <ul>
+          <li><a href="events.html">All events</a></li>
+          <li><a href="events.html?category=music">Music</a></li>
+          <li><a href="events.html?category=nightlife">Nightlife</a></li>
+          <li><a href="events.html?category=sports">Sports</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Account</h4>
+        <ul>
+          <li><a href="account.html">My account</a></li>
+          <li><a href="account.html#tickets">My tickets</a></li>
+          <li><a href="account.html#orders">Order history</a></li>
+          <li><a href="account.html#settings">Settings</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="container">
+      <div class="site-footer-bottom">
+        <span>© <span id="footerYear">2026</span> Ticketing App. All rights reserved.</span>
+        <span>Built for how events actually happen.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="js/currency.js"></script>
+  <script src="js/fees.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/account.js"></script>
+
+  <script>
+    // Auto-update footer year
+    (function () {
+      const el = document.getElementById("footerYear");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
+
+    // Optional: enable debug in dev
+    // Analytics.enableDebug();
+    // Nav.enableDebug();
+    // Account.enableDebug();
+  </script>
+
+</body>
+</html>
