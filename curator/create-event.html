@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#151515">
+  <meta name="description" content="Create a new event on Ticketing App.">
+
+  <title>Create event · Ticketing App for Organizers</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/navigation.css">
+  <link rel="stylesheet" href="../css/homepage.css">
+  <link rel="stylesheet" href="../css/curator.css">
+
+  <!-- Wizard-specific styles -->
+  <style>
+    /* ============================================================
+       CREATE EVENT WIZARD STYLES
+       ============================================================ */
+
+    .wizard-shell {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    /* Progress stepper */
+    .wizard-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-8);
+      padding: var(--space-5) var(--space-6);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .wizard-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      position: relative;
+      min-width: 0;
+    }
+
+    .wizard-step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--color-surface-2);
+      color: var(--color-text-muted);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-bold);
+      flex-shrink: 0;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .wizard-step.is-active .wizard-step-number {
+      background: var(--color-accent);
+      color: #fff;
+    }
+
+    .wizard-step.is-done .wizard-step-number {
+      background: var(--color-success);
+      color: #fff;
+    }
+
+    .wizard-step.is-active {
+      color: var(--color-text);
+      font-weight: var(--weight-medium);
+    }
+
+    .wizard-step-label {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Wizard grid — form + preview */
+    .wizard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    /* Step panel */
+    .wizard-panel {
+      display: none;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-6);
+    }
+
+    .wizard-panel.is-active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .wizard-panel h2 {
+      font-family: var(--font-serif);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-regular);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .wizard-panel > p {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Form */
+    .wizard-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .wizard-form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .wizard-form textarea {
+      min-height: 120px;
+    }
+
+    /* Category picker */
+    .category-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--space-2);
+    }
+
+    .category-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 10px 14px;
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .category-option:hover {
+      border-color: var(--color-border-strong);
+    }
+
+    .category-option.is-selected {
+      border-color: var(--color-accent);
+      background: var(--color-accent-glow);
+      color: var(--color-accent-dark);
+      font-weight: var(--weight-medium);
+    }
+
+    .category-option input {
+      display: none;
+    }
+
+    /* Tier list */
+    .tier-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .tier-row {
+      display: grid;
+      grid-template-columns: 1fr 100px 120px auto;
+      gap: var(--space-3);
+      align-items: center;
+      padding: var(--space-3);
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+    }
+
+    .tier-row input {
+      height: 38px;
+      font-size: var(--text-sm);
+      padding: 0 12px;
+    }
+
+    .tier-row label {
+      display: none;
+    }
+
+    .tier-row-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-muted);
+      border: 1px solid transparent;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .tier-row-remove:hover {
+      background: var(--color-danger-bg);
+      color: var(--color-danger);
+    }
+
+    .tier-add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 10px 16px;
+      background: transparent;
+      border: 1px dashed var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      transition: border-color var(--transition-fast), color var(--transition-fast);
+    }
+
+    .tier-add-btn:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent-dark);
+    }
+
+    /* Wizard footer actions */
+    .wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-top: var(--space-6);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .wizard-actions-right {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    /* Preview card */
+    .wizard-preview {
+      position: sticky;
+      top: var(--space-6);
+    }
+
+    .wizard-preview-label {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: var(--color-text-faint);
+      margin-bottom: var(--space-3);
+    }
+
+    .preview-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .preview-image {
+      aspect-ratio: 4 / 3;
+      background: linear-gradient(135deg, #2c2418 0%, #151515 100%);
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      inset: 0;
+    }
+
+    .preview-date {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      text-align: center;
+      line-height: 1;
+      min-width: 52px;
+      z-index: 1;
+    }
+
+    .preview-date-month {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: 2px;
+    }
+
+    .preview-date-day {
+      font-family: var(--font-serif);
+      font-size: var(--text-lg);
+      color: var(--color-text);
+    }
+
+    .preview-category {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 10px;
+      background: rgba(21, 21, 21, 0.75);
+      color: #fff;
+      border-radius: var(--radius-full);
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      z-index: 1;
+    }
+
+    .preview-body {
+      padding: var(--space-5);
+    }
+
+    .preview-title {
+      font-family: var(--font-serif);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-regular);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+      line-height: var(--leading-snug);
+    }
+
+    .preview-venue {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-4);
+    }
+
+    .preview-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .preview-price {
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      color: var(--color-text);
+    }
+
+    .preview-price small {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: var(--text-2xs);
+      color: var(--color-text-faint);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    /* Review summary */
+    .review-block {
+      margin-bottom: var(--space-5);
+      padding-bottom: var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .review-block:last-child {
+      border-bottom: 0;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .review-block h4 {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-wider);
+      text-transform: uppercase;
+      color: var(--color-text-faint);
+      margin: 0 0 var(--space-3) 0;
+    }
+
+    .review-row {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-2) 0;
+      font-size: var(--text-sm);
+    }
+
+    .review-row span:first-child {
+      color: var(--color-text-muted);
+    }
+
+    .review-row span:last-child {
+      color: var(--color-text);
+      font-weight: var(--weight-medium);
+      text-align: right;
+    }
+
+    /* Toast */
+    .wizard-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-dark);
+      color: var(--color-text-inverse);
+      padding: 12px 20px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      z-index: 9999;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Responsive */
+    @media (max-width: 1000px) {
+      .wizard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wizard-preview {
+        position: relative;
+        top: auto;
+        order: -1;
+      }
+
+      .wizard-steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wizard-form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .tier-row {
+        grid-template-columns: 1fr;
+      }
+
+      .wizard-actions {
+        flex-direction: column-reverse;
+      }
+
+      .wizard-actions-right {
+        width: 100%;
+      }
+
+      .wizard-actions-right .btn {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="curator-app">
+
+    <!-- ============================================================
+         SIDEBAR
+         ============================================================ -->
+    <aside class="curator-sidebar" aria-label="Curator navigation">
+
+      <div class="curator-sidebar-brand">
+        <a href="../index.html" class="logo" aria-label="Ticketing App home">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+      </div>
+
+      <div class="curator-picker">
+        <span class="curator-picker-label">Organizer</span>
+        <button class="curator-picker-btn" type="button">
+          <span class="curator-picker-avatar" aria-hidden="true">SE</span>
+          <span class="curator-picker-info">
+            <span class="curator-picker-name">Sunset Events Co.</span>
+            <span class="curator-picker-role">Verified organizer</span>
+          </span>
+        </button>
+      </div>
+
+      <ul class="curator-nav">
+
+        <li class="curator-nav-section">Overview</li>
+        <li>
+          <a class="curator-nav-link" href="index.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="9" rx="1"/>
+              <rect x="14" y="3" width="7" height="5" rx="1"/>
+              <rect x="14" y="12" width="7" height="9" rx="1"/>
+              <rect x="3" y="16" width="7" height="5" rx="1"/>
+            </svg>
+            Dashboard
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link is-active" href="events.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+            Events
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="analytics.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 3v18h18"/>
+              <path d="m19 9-5 5-4-4-3 3"/>
+            </svg>
+            Analytics
+          </a>
+        </li>
+
+        <li class="curator-nav-section">Manage</li>
+
+        <li>
+          <a class="curator-nav-link" href="venue-studio.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18M9 21V9"/>
+            </svg>
+            Venue Studio
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="inventory.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <path d="m3.3 7 8.7 5 8.7-5M12 22V12"/>
+            </svg>
+            Inventory
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="check-in.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M9 12l2 2 4-4"/>
+              <circle cx="12" cy="12" r="9"/>
+            </svg>
+            Check-in
+          </a>
+        </li>
+
+        <li class="curator-nav-section">Financials</li>
+
+        <li>
+          <a class="curator-nav-link" href="finances.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Finances
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="payouts.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="2" y="6" width="20" height="12" rx="2"/>
+              <circle cx="12" cy="12" r="2"/>
+            </svg>
+            Payouts
+          </a>
+        </li>
+
+      </ul>
+
+      <div class="curator-sidebar-footer">
+        <div class="curator-sidebar-user">
+          <span class="curator-user-avatar" aria-hidden="true">SM</span>
+          <span class="curator-user-info">
+            <span class="curator-user-name">Sipho Mokoena</span>
+            <span class="curator-user-role">Owner</span>
+          </span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+    <div class="curator-main">
+
+      <div class="curator-topbar">
+        <div class="curator-topbar-left">
+          <h2 class="curator-topbar-title">Create event</h2>
+        </div>
+        <div class="curator-topbar-right">
+          <a href="events.html" class="btn btn-secondary btn-sm">Cancel</a>
+        </div>
+      </div>
+
+      <div class="curator-content">
+        <div class="wizard-shell">
+
+          <!-- ============================================================
+               STEPPER
+               ============================================================ -->
+          <div class="wizard-steps" id="wizardSteps">
+            <div class="wizard-step is-active" data-step="1">
+              <span class="wizard-step-number">1</span>
+              <span class="wizard-step-label">Details</span>
+            </div>
+            <div class="wizard-step" data-step="2">
+              <span class="wizard-step-number">2</span>
+              <span class="wizard-step-label">Venue &amp; date</span>
+            </div>
+            <div class="wizard-step" data-step="3">
+              <span class="wizard-step-number">3</span>
+              <span class="wizard-step-label">Tickets</span>
+            </div>
+            <div class="wizard-step" data-step="4">
+              <span class="wizard-step-number">4</span>
+              <span class="wizard-step-label">Review</span>
+            </div>
+          </div>
+
+          <!-- ============================================================
+               WIZARD + PREVIEW
+               ============================================================ -->
+          <div class="wizard-grid">
+
+            <!-- ============================================================
+                 FORM SIDE
+                 ============================================================ -->
+            <div>
+
+              <!-- ============================================================
+                   STEP 1 — DETAILS
+                   ============================================================ -->
+              <div class="wizard-panel is-active" data-panel="1">
+                <h2>Event details</h2>
+                <p>The basics — what's your event called and how should we describe it?</p>
+
+                <form class="wizard-form" id="step1Form" onsubmit="return false;">
+                  <div class="form-group">
+                    <label for="eventTitle">Event title <span class="required" style="color:var(--color-danger);">*</span></label>
+                    <input type="text" id="eventTitle" placeholder="e.g. East Meets West" maxlength="80">
+                    <span class="form-hint">Keep it short, memorable, and descriptive.</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="eventDescription">Description <span class="required" style="color:var(--color-danger);">*</span></label>
+                    <textarea id="eventDescription" placeholder="Describe your event in one or two sentences." maxlength="240"></textarea>
+                    <span class="form-hint">Up to 240 characters. This appears on the event card.</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Category <span class="required" style="color:var(--color-danger);">*</span></label>
+                    <div class="category-picker" id="categoryPicker">
+                      <!-- Populated by wizard JS -->
+                    </div>
+                  </div>
+                </form>
+
+                <div class="wizard-actions">
+                  <span></span>
+                  <div class="wizard-actions-right">
+                    <button class="btn btn-secondary" type="button" id="saveDraftBtn">Save as draft</button>
+                    <button class="btn btn-primary" type="button" data-next="2">Continue</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ============================================================
+                   STEP 2 — VENUE & DATE
+                   ============================================================ -->
+              <div class="wizard-panel" data-panel="2">
+                <h2>Venue &amp; date</h2>
+                <p>Where and when is it happening?</p>
+
+                <form class="wizard-form" id="step2Form" onsubmit="return false;">
+                  <div class="form-group">
+                    <label for="eventVenue">Venue <span class="required" style="color:var(--color-danger);">*</span></label>
+                    <select id="eventVenue">
+                      <!-- Populated by wizard JS -->
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="eventCity">City <span class="required" style="color:var(--color-danger);">*</span></label>
+                    <select id="eventCity">
+                      <!-- Populated by wizard JS -->
+                    </select>
+                  </div>
+
+                  <div class="wizard-form-row">
+                    <div class="form-group">
+                      <label for="eventDate">Date <span class="required" style="color:var(--color-danger);">*</span></label>
+                      <input type="date" id="eventDate" min="">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="eventTime">Time <span class="required" style="color:var(--color-danger);">*</span></label>
+                      <input type="time" id="eventTime" value="19:00">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="eventImage">Event image URL</label>
+                    <input type="url" id="eventImage" placeholder="https://images.unsplash.com/...">
+                    <span class="form-hint">Paste a URL to an image. Optional — we'll use a placeholder if you skip it.</span>
+                  </div>
+                </form>
+
+                <div class="wizard-actions">
+                  <button class="btn btn-ghost" type="button" data-prev="1">← Back</button>
+                  <div class="wizard-actions-right">
+                    <button class="btn btn-primary" type="button" data-next="3">Continue</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ============================================================
+                   STEP 3 — TICKETS
+                   ============================================================ -->
+              <div class="wizard-panel" data-panel="3">
+                <h2>Ticket tiers</h2>
+                <p>Define what you're selling — from general admission to platinum tables.</p>
+
+                <div class="tier-list" id="tierList">
+                  <!-- Populated by wizard JS -->
+                </div>
+
+                <button class="tier-add-btn" type="button" id="addTierBtn" style="margin-top: var(--space-4);">
+                  <span style="font-weight:700;">+</span> Add another tier
+                </button>
+
+                <div class="wizard-actions">
+                  <button class="btn btn-ghost" type="button" data-prev="2">← Back</button>
+                  <div class="wizard-actions-right">
+                    <button class="btn btn-primary" type="button" data-next="4">Continue</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ============================================================
+                   STEP 4 — REVIEW
+                   ============================================================ -->
+              <div class="wizard-panel" data-panel="4">
+                <h2>Review &amp; publish</h2>
+                <p>Take a last look before you go live.</p>
+
+                <div id="reviewContent">
+                  <!-- Populated by wizard JS -->
+                </div>
+
+                <div class="wizard-actions">
+                  <button class="btn btn-ghost" type="button" data-prev="3">← Back</button>
+                  <div class="wizard-actions-right">
+                    <button class="btn btn-secondary" type="button" id="saveDraftBtn2">Save as draft</button>
+                    <button class="btn btn-primary" type="button" id="publishBtn">
+                      Publish event
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ============================================================
+                 PREVIEW SIDE
+                 ============================================================ -->
+            <aside class="wizard-preview">
+              <div class="wizard-preview-label">Live preview</div>
+
+              <div class="preview-card">
+                <div class="preview-image" id="previewImage">
+                  <span>Event image</span>
+                  <div class="preview-date">
+                    <div class="preview-date-month" id="previewMonth">Aug</div>
+                    <div class="preview-date-day" id="previewDay">24</div>
+                  </div>
+                  <span class="preview-category" id="previewCategory">Music</span>
+                </div>
+
+                <div class="preview-body">
+                  <h3 class="preview-title" id="previewTitle">Your event title</h3>
+
+                  <div class="preview-venue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;" aria-hidden="true">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span id="previewVenue">Venue · City</span>
+                  </div>
+
+                  <div class="preview-footer">
+                    <div class="preview-price">
+                      <small>From</small>
+                      <span id="previewPrice">R0</span>
+                    </div>
+                    <span style="font-size: var(--text-xs); font-weight: 600; letter-spacing: var(--text-2xs); text-transform: uppercase; color: var(--color-text-muted);">
+                      View →
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-4); text-align: center; line-height: var(--leading-relaxed);">
+                This is how your event will appear on the customer-facing site.
+              </p>
+            </aside>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="../js/currency.js"></script>
+  <script src="../js/fees.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/analytics.js"></script>
+  <script src="../js/navigation.js"></script>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+
+    const wizard = {
+      step: 1,
+      data: {
+        title: "",
+        description: "",
+        category: "",
+        venueId: "",
+        city: "",
+        date: "",
+        time: "19:00",
+        image: "",
+        tiers: [],
+      },
+    };
+
+    /* ============================================================
+       UTILS
+       ============================================================ */
+
+    function fmt(amount) {
+      if (window.Currency && window.Currency.format) {
+        return window.Currency.format(amount);
+      }
+      return `R${Number(amount || 0).toLocaleString()}`;
+    }
+
+    function escapeHTML(str) {
+      if (str == null) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function showToast(message) {
+      const existing = document.querySelector(".wizard-toast");
+      if (existing) existing.remove();
+      const t = document.createElement("div");
+      t.className = "wizard-toast";
+      t.textContent = message;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2400);
+    }
+
+    function track(name, props) {
+      if (window.Analytics && window.Analytics.track) {
+        window.Analytics.track(name, props);
+      }
+    }
+
+    /* ============================================================
+       INIT — POPULATE SELECTS AND DEFAULT TIERS
+       ============================================================ */
+
+    function init() {
+      // Populate cities
+      const citySelect = document.getElementById("eventCity");
+      if (citySelect && window.Data) {
+        const cities = window.Data.getCities();
+        citySelect.innerHTML = `<option value="">Select city</option>` +
+          cities.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+      }
+
+      // Populate venues
+      const venueSelect = document.getElementById("eventVenue");
+      if (venueSelect && window.Data) {
+        const venues = window.Data.getVenues();
+        venueSelect.innerHTML = `<option value="">Select venue</option>` +
+          venues.map(v => `<option value="${v.id}">${v.name} · ${v.city.toUpperCase()}</option>`).join("");
+      }
+
+      // Populate categories
+      const catPicker = document.getElementById("categoryPicker");
+      if (catPicker && window.Data) {
+        const cats = window.Data.getCategories();
+        catPicker.innerHTML = cats.map(c => `
+          <label class="category-option" data-category="${c.id}">
+            <input type="radio" name="category" value="${c.id}">
+            <span>${c.icon} ${escapeHTML(c.name)}</span>
+          </label>
+        `).join("");
+
+        catPicker.querySelectorAll("[data-category]").forEach(el => {
+          el.addEventListener("click", () => {
+            catPicker.querySelectorAll(".category-option").forEach(x => x.classList.remove("is-selected"));
+            el.classList.add("is-selected");
+            const input = el.querySelector("input");
+            if (input) input.checked = true;
+            wizard.data.category = el.dataset.category;
+            updatePreview();
+          });
+        });
+      }
+
+      // Default date = today + 30 days
+      const dateInput = document.getElementById("eventDate");
+      if (dateInput) {
+        const min = new Date();
+        min.setDate(min.getDate() + 1);
+        dateInput.min = min.toISOString().split("T")[0];
+
+        const def = new Date();
+        def.setDate(def.getDate() + 30);
+        dateInput.value = def.toISOString().split("T")[0];
+        wizard.data.date = dateInput.value;
+      }
+
+      // Add two default tiers
+      addTier({ name: "General Admission", price: 250, capacity: 200 });
+      addTier({ name: "VIP", price: 950, capacity: 50 });
+
+      // Wire inputs to state
+      wireInputs();
+
+      // Wire navigation
+      wireNav();
+
+      // Wire tier add
+      const addBtn = document.getElementById("addTierBtn");
+      if (addBtn) {
+        addBtn.addEventListener("click", () => {
+          addTier({ name: "", price: 0, capacity: 50 });
+        });
+      }
+
+      // Wire draft save
+      document.getElementById("saveDraftBtn")?.addEventListener("click", saveDraft);
+      document.getElementById("saveDraftBtn2")?.addEventListener("click", saveDraft);
+
+      // Wire publish
+      document.getElementById("publishBtn")?.addEventListener("click", publish);
+
+      // Initial preview
+      updatePreview();
+
+      track("page_view", { page: "curator_create_event" });
+    }
+
+    /* ============================================================
+       WIRE INPUTS
+       ============================================================ */
+
+    function wireInputs() {
+      const title = document.getElementById("eventTitle");
+      const description = document.getElementById("eventDescription");
+      const venue = document.getElementById("eventVenue");
+      const city = document.getElementById("eventCity");
+      const date = document.getElementById("eventDate");
+      const time = document.getElementById("eventTime");
+      const image = document.getElementById("eventImage");
+
+      title?.addEventListener("input", (e) => {
+        wizard.data.title = e.target.value;
+        updatePreview();
+      });
+
+      description?.addEventListener("input", (e) => {
+        wizard.data.description = e.target.value;
+      });
+
+      venue?.addEventListener("change", (e) => {
+        wizard.data.venueId = e.target.value;
+        updatePreview();
+      });
+
+      city?.addEventListener("change", (e) => {
+        wizard.data.city = e.target.value;
+        updatePreview();
+      });
+
+      date?.addEventListener("change", (e) => {
+        wizard.data.date = e.target.value;
+        updatePreview();
+      });
+
+      time?.addEventListener("change", (e) => {
+        wizard.data.time = e.target.value;
+      });
+
+      image?.addEventListener("input", (e) => {
+        wizard.data.image = e.target.value;
+        updatePreview();
+      });
+    }
+
+    /* ============================================================
+       NAVIGATION
+       ============================================================ */
+
+    function wireNav() {
+      document.querySelectorAll("[data-next]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const target = parseInt(btn.dataset.next, 10);
+          if (validateStep(wizard.step)) {
+            goTo(target);
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-prev]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const target = parseInt(btn.dataset.prev, 10);
+          goTo(target);
+        });
+      });
+    }
+
+    function goTo(step) {
+      wizard.step = step;
+
+      document.querySelectorAll(".wizard-panel").forEach(p => {
+        p.classList.toggle("is-active", parseInt(p.dataset.panel, 10) === step);
+      });
+
+      document.querySelectorAll(".wizard-step").forEach(s => {
+        const n = parseInt(s.dataset.step, 10);
+        s.classList.toggle("is-active", n === step);
+        s.classList.toggle("is-done", n < step);
+      });
+
+      if (step === 4) renderReview();
+
+      track("curator_wizard_step", { step });
+    }
+
+    function validateStep(step) {
+      if (step === 1) {
+        if (!wizard.data.title.trim()) {
+          showToast("Please enter an event title.");
+          return false;
+        }
+        if (!wizard.data.category) {
+          showToast("Please select a category.");
+          return false;
+        }
+      }
+
+      if (step === 2) {
+        if (!wizard.data.venueId) {
+          showToast("Please select a venue.");
+          return false;
+        }
+        if (!wizard.data.city) {
+          showToast("Please select a city.");
+          return false;
+        }
+        if (!wizard.data.date) {
+          showToast("Please pick a date.");
+          return false;
+        }
+      }
+
+      if (step === 3) {
+        if (!wizard.data.tiers.length) {
+          showToast("Add at least one ticket tier.");
+          return false;
+        }
+        const invalid = wizard.data.tiers.some(t => !t.name.trim() || !t.price || !t.capacity);
+        if (invalid) {
+          showToast("Every tier needs a name, price, and capacity.");
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    /* ============================================================
+       TIERS
+       ============================================================ */
+
+    function addTier(initial) {
+      const tier = {
+        id: "tier_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+        name: initial.name || "",
+        price: initial.price || 0,
+        capacity: initial.capacity || 50,
+      };
+      wizard.data.tiers.push(tier);
+      renderTiers();
+    }
+
+    function renderTiers() {
+      const list = document.getElementById("tierList");
+      if (!list) return;
+
+      list.innerHTML = wizard.data.tiers.map(t => `
+        <div class="tier-row" data-tier-id="${t.id}">
+          <input type="text" placeholder="Tier name (e.g. VIP)" value="${escapeHTML(t.name)}" data-field="name">
+          <input type="number" placeholder="Price" value="${t.price || ""}" min="0" step="50" data-field="price">
+          <input type="number" placeholder="Capacity" value="${t.capacity || ""}" min="1" data-field="capacity">
+          <button class="tier-row-remove" type="button" title="Remove">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      `).join("");
+
+      list.querySelectorAll(".tier-row").forEach(row => {
+        const id = row.dataset.tierId;
+        const tier = wizard.data.tiers.find(t => t.id === id);
+
+        row.querySelectorAll("input").forEach(input => {
+          input.addEventListener("input", () => {
+            const field = input.dataset.field;
+            if (field === "price" || field === "capacity") {
+              tier[field] = Number(input.value) || 0;
+            } else {
+              tier[field] = input.value;
+            }
+            updatePreview();
+          });
+        });
+
+        row.querySelector(".tier-row-remove").addEventListener("click", () => {
+          wizard.data.tiers = wizard.data.tiers.filter(t => t.id !== id);
+          renderTiers();
+          updatePreview();
+        });
+      });
+
+      updatePreview();
+    }
+
+    /* ============================================================
+       PREVIEW
+       ============================================================ */
+
+    function updatePreview() {
+      const title = document.getElementById("previewTitle");
+      const venue = document.getElementById("previewVenue");
+      const price = document.getElementById("previewPrice");
+      const month = document.getElementById("previewMonth");
+      const day = document.getElementById("previewDay");
+      const cat = document.getElementById("previewCategory");
+      const img = document.getElementById("previewImage");
+
+      if (title) title.textContent = wizard.data.title || "Your event title";
+
+      let venueText = "Venue · City";
+      if (window.Data) {
+        const v = wizard.data.venueId ? window.Data.getVenue(wizard.data.venueId) : null;
+        const c = wizard.data.city ? window.Data.getCity(wizard.data.city) : null;
+        venueText = `${v ? v.name : "Venue"} · ${c ? c.name : "City"}`;
+      }
+      if (venue) venue.textContent = venueText;
+
+      const lowest = wizard.data.tiers.length
+        ? Math.min(...wizard.data.tiers.filter(t => t.price > 0).map(t => t.price))
+        : 0;
+      if (price) price.textContent = fmt(lowest || 0);
+
+      if (wizard.data.date) {
+        const d = new Date(wizard.data.date);
+        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        if (month) month.textContent = months[d.getMonth()];
+        if (day) day.textContent = String(d.getDate()).padStart(2, "0");
+      }
+
+      if (cat && window.Data) {
+        const c = window.Data.getCategory(wizard.data.category);
+        cat.textContent = c ? c.name : "Category";
+      }
+
+      // Image
+      if (img) {
+        const existing = img.querySelector("img");
+        if (wizard.data.image) {
+          if (existing) {
+            existing.src = wizard.data.image;
+          } else {
+            const i = document.createElement("img");
+            i.src = wizard.data.image;
+            i.alt = "";
+            i.onerror = () => i.remove();
+            img.appendChild(i);
+          }
+        } else if (existing) {
+          existing.remove();
+        }
+      }
+    }
+
+    /* ============================================================
+       REVIEW
+       ============================================================ */
+
+    function renderReview() {
+      const container = document.getElementById("reviewContent");
+      if (!container) return;
+
+      const v = wizard.data.venueId ? window.Data.getVenue(wizard.data.venueId) : null;
+      const c = wizard.data.city ? window.Data.getCity(wizard.data.city) : null;
+      const cat = window.Data.getCategory(wizard.data.category);
+
+      const totalCapacity = wizard.data.tiers.reduce((s, t) => s + (t.capacity || 0), 0);
+      const lowestPrice = Math.min(...wizard.data.tiers.filter(t => t.price > 0).map(t => t.price)) || 0;
+
+      container.innerHTML = `
+        <div class="review-block">
+          <h4>Event</h4>
+          <div class="review-row"><span>Title</span><span>${escapeHTML(wizard.data.title)}</span></div>
+          <div class="review-row"><span>Category</span><span>${escapeHTML(cat ? cat.name : "")}</span></div>
+          <div class="review-row"><span>Description</span><span>${escapeHTML(wizard.data.description || "—")}</span></div>
+        </div>
+
+        <div class="review-block">
+          <h4>Venue &amp; date</h4>
+          <div class="review-row"><span>Venue</span><span>${escapeHTML(v ? v.name : "")}</span></div>
+          <div class="review-row"><span>City</span><span>${escapeHTML(c ? c.name : "")}</span></div>
+          <div class="review-row"><span>Date</span><span>${escapeHTML(wizard.data.date)}</span></div>
+          <div class="review-row"><span>Time</span><span>${escapeHTML(wizard.data.time)}</span></div>
+        </div>
+
+        <div class="review-block">
+          <h4>Tickets</h4>
+          ${wizard.data.tiers.map(t => `
+            <div class="review-row">
+              <span>${escapeHTML(t.name)}</span>
+              <span>${fmt(t.price)} · ${t.capacity} seats</span>
+            </div>
+          `).join("")}
+          <div class="review-row" style="border-top:1px solid var(--color-border); margin-top:8px; padding-top:8px;">
+            <span>Total capacity</span>
+            <span>${totalCapacity} seats</span>
+          </div>
+          <div class="review-row">
+            <span>Starting price</span>
+            <span>${fmt(lowestPrice)}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ============================================================
+       SAVE / PUBLISH
+       ============================================================ */
+
+    function saveDraft() {
+      try {
+        const drafts = JSON.parse(localStorage.getItem("ticketing_app:drafts") || "[]");
+        drafts.push({
+          ...wizard.data,
+          savedAt: Date.now(),
+        });
+        localStorage.setItem("ticketing_app:drafts", JSON.stringify(drafts));
+        showToast("Draft saved.");
+        track("curator_save_draft", { title: wizard.data.title });
+      } catch (e) {
+        showToast("Could not save draft.");
+      }
+    }
+
+    function publish() {
+      if (!validateStep(1) || !validateStep(2) || !validateStep(3)) {
+        showToast("Please complete all required fields.");
+        return;
+      }
+
+      const id = wizard.data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "event";
+
+      const newEvent = {
+        id: id,
+        title: wizard.data.title,
+        slug: id,
+        category: wizard.data.category,
+        venueId: wizard.data.venueId,
+        city: wizard.data.city,
+        date: wizard.data.date,
+        dateLabel: "",
+        time: wizard.data.time,
+        timeLabel: wizard.data.time,
+        priceFrom: Math.min(...wizard.data.tiers.map(t => t.price)),
+        image: wizard.data.image || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200",
+        description: wizard.data.description,
+        featured: false,
+        status: "active",
+        ticketTiers: wizard.data.tiers.map((t, i) => ({
+          id: `${id}-tier-${i + 1}`,
+          name: t.name,
+          description: `${t.name} tier`,
+          price: t.price,
+          capacity: t.capacity,
+          available: t.capacity,
+          tier: i === 0 ? "general" : i === 1 ? "premium" : "vip",
+        })),
+        createdByCurator: true,
+        createdAt: Date.now(),
+      };
+
+      try {
+        const custom = JSON.parse(localStorage.getItem("ticketing_app:curatorEvents") || "[]");
+        custom.push(newEvent);
+        localStorage.setItem("ticketing_app:curatorEvents", JSON.stringify(custom));
+      } catch (e) {}
+
+      track("curator_publish_event", {
+        eventId: newEvent.id,
+        title: newEvent.title,
+        tierCount: newEvent.ticketTiers.length,
+      });
+
+      showToast("Event published! Redirecting to your dashboard…");
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1400);
+    }
+
+    /* ============================================================
+       BOOT
+       ============================================================ */
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
