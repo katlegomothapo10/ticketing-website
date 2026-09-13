@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#151515">
+  <meta name="description" content="Understand your revenue, profit, and break-even point.">
+
+  <title>Finances · Ticketing App for Organizers</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/navigation.css">
+  <link rel="stylesheet" href="../css/homepage.css">
+  <link rel="stylesheet" href="../css/curator.css">
+
+  <style>
+    /* ============================================================
+       FINANCES PAGE
+       ============================================================ */
+
+    /* Break-even hero card */
+    .break-even-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-8);
+      align-items: center;
+      padding: var(--space-8);
+      background: linear-gradient(135deg, #2c2418 0%, #151515 100%);
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: var(--space-8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .break-even-card::before {
+      content: "";
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 60%;
+      height: 200%;
+      background: radial-gradient(
+        circle,
+        rgba(184, 148, 74, 0.25) 0%,
+        transparent 60%
+      );
+      pointer-events: none;
+    }
+
+    .break-even-card-left {
+      position: relative;
+    }
+
+    .break-even-card-label {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: var(--space-3);
+    }
+
+    .break-even-card-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: var(--weight-regular);
+      letter-spacing: var(--tracking-tight);
+      color: var(--color-text-inverse);
+      margin-bottom: var(--space-3);
+    }
+
+    .break-even-card-subtitle {
+      font-size: var(--text-sm);
+      color: rgba(255, 255, 255, 0.65);
+      line-height: var(--leading-relaxed);
+      max-width: 480px;
+      margin-bottom: var(--space-6);
+    }
+
+    .break-even-card-stats {
+      display: flex;
+      gap: var(--space-8);
+      flex-wrap: wrap;
+    }
+
+    .break-even-stat-label {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-wider);
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.45);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .break-even-stat-value {
+      font-family: var(--font-serif);
+      font-size: var(--text-2xl);
+      color: var(--color-text-inverse);
+      letter-spacing: var(--tracking-tight);
+    }
+
+    /* Radial progress */
+    .break-even-card-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .break-even-radial {
+      width: 180px;
+      height: 180px;
+      position: relative;
+    }
+
+    .break-even-radial svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .break-even-radial-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 12;
+    }
+
+    .break-even-radial-fill {
+      fill: none;
+      stroke: url(#breakEvenGradient);
+      stroke-width: 12;
+      stroke-linecap: round;
+      transition: stroke-dashoffset var(--transition-slow);
+    }
+
+    .break-even-radial-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .break-even-radial-value {
+      font-family: var(--font-serif);
+      font-size: var(--text-3xl);
+      color: var(--color-text-inverse);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .break-even-radial-label {
+      font-size: var(--text-2xs);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: var(--weight-semibold);
+    }
+
+    /* Finance breakdown */
+    .finance-breakdown {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    .finance-breakdown-header {
+      margin-bottom: var(--space-5);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .finance-breakdown-header h3 {
+      font-family: var(--font-serif);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-regular);
+      color: var(--color-text);
+      margin: 0 0 4px 0;
+    }
+
+    .finance-breakdown-header p {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+
+    .finance-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+    }
+
+    .finance-row:last-child {
+      border-bottom: 0;
+    }
+
+    .finance-row-label {
+      color: var(--color-text-muted);
+    }
+
+    .finance-row-value {
+      font-family: var(--font-mono);
+      font-size: var(--text-md);
+      color: var(--color-text);
+      font-weight: var(--weight-medium);
+    }
+
+    .finance-row.is-negative .finance-row-value {
+      color: var(--color-danger);
+    }
+
+    .finance-row.is-positive .finance-row-value {
+      color: var(--color-success);
+    }
+
+    .finance-row.is-subtotal {
+      padding-top: var(--space-4);
+      margin-top: var(--space-2);
+      border-top: 2px solid var(--color-border);
+      border-bottom: 0;
+    }
+
+    .finance-row.is-subtotal .finance-row-label {
+      color: var(--color-text);
+      font-weight: var(--weight-semibold);
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+    }
+
+    .finance-row.is-subtotal .finance-row-value {
+      font-family: var(--font-serif);
+      font-size: var(--text-lg);
+      color: var(--color-text);
+    }
+
+    .finance-row.is-total {
+      padding: var(--space-5) 0 var(--space-3);
+      border-top: 2px solid var(--color-text);
+      border-bottom: 0;
+      margin-top: var(--space-3);
+    }
+
+    .finance-row.is-total .finance-row-label {
+      font-family: var(--font-serif);
+      font-size: var(--text-lg);
+      color: var(--color-text);
+      font-weight: var(--weight-regular);
+    }
+
+    .finance-row.is-total .finance-row-value {
+      font-family: var(--font-serif);
+      font-size: var(--text-3xl);
+      color: var(--color-accent-dark);
+      font-weight: var(--weight-regular);
+    }
+
+    /* Expenses table */
+    .expenses-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .expenses-table th {
+      text-align: left;
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-wider);
+      text-transform: uppercase;
+      color: var(--color-text-faint);
+      padding: var(--space-3) var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      white-space: nowrap;
+    }
+
+    .expenses-table th.is-right { text-align: right; }
+
+    .expenses-table td {
+      padding: var(--space-3) var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+    }
+
+    .expenses-table td.is-right {
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+
+    .expenses-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .expenses-table input {
+      height: 34px;
+      padding: 0 10px;
+      font-size: var(--text-sm);
+    }
+
+    .expense-remove {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-muted);
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .expense-remove:hover {
+      background: var(--color-danger-bg);
+      color: var(--color-danger);
+    }
+
+    .expense-remove svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* VAT card */
+    .vat-card {
+      padding: var(--space-5);
+      background: var(--color-info-bg);
+      border: 1px solid var(--color-info);
+      border-radius: var(--radius-md);
+      display: flex;
+      gap: var(--space-4);
+      align-items: flex-start;
+      margin-bottom: var(--space-6);
+    }
+
+    .vat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--color-info);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .vat-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .vat-content h4 {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text);
+      margin: 0 0 4px 0;
+    }
+
+    .vat-content p {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      line-height: var(--leading-relaxed);
+      margin: 0;
+    }
+
+    .vat-content strong {
+      color: var(--color-text);
+      font-weight: var(--weight-semibold);
+    }
+
+    /* Bar chart for revenue vs expenses */
+    .fin-chart {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    .fin-chart-item {
+      padding: var(--space-5);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .fin-chart-label {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-wider);
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    .fin-chart-value {
+      font-family: var(--font-serif);
+      font-size: var(--text-2xl);
+      color: var(--color-text);
+      margin-bottom: var(--space-4);
+      letter-spacing: var(--tracking-tight);
+    }
+
+    .fin-chart-bar {
+      height: 10px;
+      background: var(--color-surface-2);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .fin-chart-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+      border-radius: var(--radius-full);
+      transition: width var(--transition-slow);
+    }
+
+    .fin-chart-bar-fill.is-danger {
+      background: linear-gradient(90deg, #df6666 0%, #b84a4a 100%);
+    }
+
+    .fin-chart-meta {
+      margin-top: var(--space-3);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Add expense button */
+    .add-expense-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 10px 16px;
+      background: transparent;
+      border: 1px dashed var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      transition: border-color var(--transition-fast), color var(--transition-fast);
+      margin-top: var(--space-4);
+    }
+
+    .add-expense-btn:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent-dark);
+    }
+
+    /* Studio toast (shared) */
+    .curator-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-dark);
+      color: var(--color-text-inverse);
+      padding: 12px 20px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      z-index: 9999;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .break-even-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .break-even-card-subtitle {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .break-even-card-stats {
+        justify-content: center;
+      }
+
+      .fin-chart {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .break-even-card {
+        padding: var(--space-6);
+      }
+
+      .break-even-card-stats {
+        gap: var(--space-5);
+      }
+
+      .break-even-radial {
+        width: 140px;
+        height: 140px;
+      }
+
+      .break-even-radial-value {
+        font-size: var(--text-2xl);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="curator-app">
+
+    <!-- ============================================================
+         SIDEBAR
+         ============================================================ -->
+    <aside class="curator-sidebar" aria-label="Curator navigation">
+
+      <div class="curator-sidebar-brand">
+        <a href="../index.html" class="logo" aria-label="Ticketing App home">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+      </div>
+
+      <div class="curator-picker">
+        <span class="curator-picker-label">Organizer</span>
+        <button class="curator-picker-btn" type="button">
+          <span class="curator-picker-avatar" aria-hidden="true">SE</span>
+          <span class="curator-picker-info">
+            <span class="curator-picker-name">Sunset Events Co.</span>
+            <span class="curator-picker-role">Verified organizer</span>
+          </span>
+        </button>
+      </div>
+
+      <ul class="curator-nav">
+
+        <li class="curator-nav-section">Overview</li>
+        <li><a class="curator-nav-link" href="index.html">Dashboard</a></li>
+        <li><a class="curator-nav-link" href="events.html">Events</a></li>
+        <li><a class="curator-nav-link" href="analytics.html">Analytics</a></li>
+
+        <li class="curator-nav-section">Manage</li>
+        <li><a class="curator-nav-link" href="venue-studio.html">Venue Studio</a></li>
+        <li><a class="curator-nav-link" href="inventory.html">Inventory</a></li>
+        <li><a class="curator-nav-link" href="check-in.html">Check-in</a></li>
+
+        <li class="curator-nav-section">Financials</li>
+        <li><a class="curator-nav-link is-active" href="finances.html">Finances</a></li>
+        <li><a class="curator-nav-link" href="payouts.html">Payouts</a></li>
+
+      </ul>
+
+      <div class="curator-sidebar-footer">
+        <div class="curator-sidebar-user">
+          <span class="curator-user-avatar" aria-hidden="true">SM</span>
+          <span class="curator-user-info">
+            <span class="curator-user-name">Sipho Mokoena</span>
+            <span class="curator-user-role">Owner</span>
+          </span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+    <div class="curator-main">
+
+      <div class="curator-topbar">
+        <div class="curator-topbar-left">
+          <h2 class="curator-topbar-title">Finances</h2>
+        </div>
+        <div class="curator-topbar-right">
+          <button class="btn btn-secondary btn-sm" id="exportBtn" type="button">
+            Export CSV
+          </button>
+          <button class="btn btn-primary btn-sm" id="requestPayoutBtn" type="button">
+            Request payout
+          </button>
+        </div>
+      </div>
+
+      <div class="curator-content">
+
+        <!-- Page header -->
+        <div class="curator-page-header">
+          <div class="curator-page-header-left">
+            <h1>Know where your event stands.</h1>
+            <p>Real-time revenue, expenses, VAT, and profit — calculated from every ticket sold.</p>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             BREAK-EVEN HERO
+             ============================================================ -->
+        <div class="break-even-card">
+
+          <div class="break-even-card-left">
+            <div class="break-even-card-label">Break-even analysis</div>
+            <h2 class="break-even-card-title" id="breakEvenTitle">
+              Loading…
+            </h2>
+            <p class="break-even-card-subtitle" id="breakEvenSubtitle">
+              Calculating from your ticket sales and expenses.
+            </p>
+
+            <div class="break-even-card-stats">
+              <div>
+                <span class="break-even-stat-label">Break-even</span>
+                <span class="break-even-stat-value" id="breakEvenPoint">—</span>
+              </div>
+              <div>
+                <span class="break-even-stat-label">Sold</span>
+                <span class="break-even-stat-value" id="breakEvenSold">—</span>
+              </div>
+              <div>
+                <span class="break-even-stat-label">Remaining</span>
+                <span class="break-even-stat-value" id="breakEvenRemaining">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="break-even-card-right">
+            <div class="break-even-radial">
+              <svg viewBox="0 0 180 180">
+                <defs>
+                  <linearGradient id="breakEvenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#d4b87a"/>
+                    <stop offset="100%" stop-color="#b8944a"/>
+                  </linearGradient>
+                </defs>
+                <circle class="break-even-radial-bg" cx="90" cy="90" r="78"/>
+                <circle
+                  class="break-even-radial-fill"
+                  id="breakEvenCircle"
+                  cx="90" cy="90" r="78"
+                  stroke-dasharray="490"
+                  stroke-dashoffset="490"
+                />
+              </svg>
+              <div class="break-even-radial-content">
+                <div class="break-even-radial-value" id="breakEvenPercent">0%</div>
+                <div class="break-even-radial-label">of target</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================
+             REVENUE VS EXPENSES CHART
+             ============================================================ -->
+        <div class="fin-chart">
+          <div class="fin-chart-item">
+            <div class="fin-chart-label">Gross revenue</div>
+            <div class="fin-chart-value" id="chartGross">R0</div>
+            <div class="fin-chart-bar">
+              <div class="fin-chart-bar-fill" id="chartGrossBar" style="width: 0%;"></div>
+            </div>
+            <div class="fin-chart-meta" id="chartGrossMeta">—</div>
+          </div>
+
+          <div class="fin-chart-item">
+            <div class="fin-chart-label">Total expenses</div>
+            <div class="fin-chart-value" id="chartExpenses">R0</div>
+            <div class="fin-chart-bar">
+              <div class="fin-chart-bar-fill is-danger" id="chartExpensesBar" style="width: 0%;"></div>
+            </div>
+            <div class="fin-chart-meta" id="chartExpensesMeta">—</div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             MAIN FINANCE BREAKDOWN
+             ============================================================ -->
+        <div class="dashboard-grid">
+
+          <div>
+
+            <!-- Breakdown -->
+            <div class="finance-breakdown">
+              <div class="finance-breakdown-header">
+                <h3>Financial breakdown</h3>
+                <p>Every line item from your ticket sales.</p>
+              </div>
+
+              <div class="finance-row">
+                <span class="finance-row-label">Gross revenue (all orders)</span>
+                <span class="finance-row-value" id="rowGross">R0</span>
+              </div>
+
+              <div class="finance-row is-negative">
+                <span class="finance-row-label">Platform commission</span>
+                <span class="finance-row-value" id="rowPlatform">-R0</span>
+              </div>
+
+              <div class="finance-row is-negative">
+                <span class="finance-row-label">Payment processing fees</span>
+                <span class="finance-row-value" id="rowProcessing">-R0</span>
+              </div>
+
+              <div class="finance-row is-negative">
+                <span class="finance-row-label">Refunds issued</span>
+                <span class="finance-row-value" id="rowRefunds">-R0</span>
+              </div>
+
+              <div class="finance-row is-subtotal">
+                <span class="finance-row-label">Net revenue</span>
+                <span class="finance-row-value" id="rowNetRevenue">R0</span>
+              </div>
+
+              <div class="finance-row is-negative">
+                <span class="finance-row-label">Operating expenses</span>
+                <span class="finance-row-value" id="rowExpenses">-R0</span>
+              </div>
+
+              <div class="finance-row is-negative">
+                <span class="finance-row-label">VAT payable (15%)</span>
+                <span class="finance-row-value" id="rowVat">-R0</span>
+              </div>
+
+              <div class="finance-row is-total">
+                <span class="finance-row-label">Estimated profit</span>
+                <span class="finance-row-value" id="rowProfit">R0</span>
+              </div>
+            </div>
+
+            <!-- Expenses -->
+            <div class="finance-breakdown">
+              <div class="finance-breakdown-header" style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);">
+                <div>
+                  <h3>Operating expenses</h3>
+                  <p>Track every cost for accurate profit.</p>
+                </div>
+              </div>
+
+              <table class="expenses-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Expense</th>
+                    <th scope="col" class="is-right">Amount</th>
+                    <th scope="col" style="width:40px;"><span class="sr-only">Remove</span></th>
+                  </tr>
+                </thead>
+                <tbody id="expensesBody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+
+              <button class="add-expense-btn" id="addExpenseBtn" type="button">
+                <span style="font-weight:700;">+</span> Add expense
+              </button>
+            </div>
+
+          </div>
+
+          <div>
+
+            <!-- VAT info -->
+            <div class="vat-card">
+              <div class="vat-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+              </div>
+              <div class="vat-content">
+                <h4>VAT registered?</h4>
+                <p>
+                  If your turnover exceeds <strong>R1,000,000 per year</strong>, you must be VAT registered.
+                  Your VAT obligation is <strong>15%</strong> of net sales in South Africa.
+                  Ticketing App calculates this automatically.
+                </p>
+              </div>
+            </div>
+
+            <!-- Profit margin widget -->
+            <div class="side-card">
+              <div class="side-card-header">
+                <h3 class="side-card-title">Profit margin</h3>
+              </div>
+
+              <div style="text-align:center;padding:var(--space-4) 0;">
+                <div style="font-family:var(--font-serif);font-size:2.5rem;color:var(--color-accent-dark);line-height:1;" id="marginPercent">0%</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-muted);letter-spacing:var(--tracking-wider);text-transform:uppercase;margin-top:var(--space-2);">net margin</div>
+              </div>
+
+              <div class="finance-row" style="border-top:1px solid var(--color-border);padding-top:var(--space-4);">
+                <span class="finance-row-label">Revenue per ticket</span>
+                <span class="finance-row-value" id="perTicketRevenue">R0</span>
+              </div>
+
+              <div class="finance-row">
+                <span class="finance-row-label">Profit per ticket</span>
+                <span class="finance-row-value" id="perTicketProfit">R0</span>
+              </div>
+            </div>
+
+            <!-- Per-event summary -->
+            <div class="side-card">
+              <div class="side-card-header">
+                <h3 class="side-card-title">Per-event profit</h3>
+              </div>
+
+              <div id="perEventList"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="../js/currency.js"></script>
+  <script src="../js/fees.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/analytics.js"></script>
+  <script src="../js/navigation.js"></script>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+
+    const state = {
+      orders: [],
+      events: [],
+      expenses: [],
+      totals: {},
+    };
+
+    const STORAGE_KEY = "ticketing_app:curatorExpenses";
+
+    /* ============================================================
+       HELPERS
+       ============================================================ */
+
+    function fmt(amount) {
+      if (window.Currency && window.Currency.format) {
+        return window.Currency.format(amount);
+      }
+      return `R${Number(amount || 0).toLocaleString()}`;
+    }
+
+    function round(v, d) {
+      const f = Math.pow(10, d || 0);
+      return Math.round(v * f) / f;
+    }
+
+    function escapeHTML(str) {
+      if (str == null) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function showToast(message) {
+      const existing = document.querySelector(".curator-toast");
+      if (existing) existing.remove();
+      const t = document.createElement("div");
+      t.className = "curator-toast";
+      t.textContent = message;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2400);
+    }
+
+    function track(name, props) {
+      if (window.Analytics && window.Analytics.track) {
+        window.Analytics.track(name, props);
+      }
+    }
+
+    /* ============================================================
+       LOAD DATA
+       ============================================================ */
+
+    function loadData() {
+      state.orders = window.Data.getOrders() || [];
+      state.events = window.Data.getEvents() || [];
+
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        state.expenses = raw ? JSON.parse(raw) : defaultExpenses();
+      } catch (e) {
+        state.expenses = defaultExpenses();
+      }
+
+      // Ensure every expense has id, name, amount
+      state.expenses = state.expenses.map((e, i) => ({
+        id: e.id || `exp_${i}_${Date.now()}`,
+        name: e.name || "",
+        amount: Number(e.amount) || 0,
+      }));
+    }
+
+    function defaultExpenses() {
+      // Demo expenses to show the feature
+      return [
+        { id: "exp_1", name: "Venue hire", amount: 45000 },
+        { id: "exp_2", name: "Artist fees", amount: 85000 },
+        { id: "exp_3", name: "Sound & lighting", amount: 25000 },
+        { id: "exp_4", name: "Staffing", amount: 15000 },
+        { id: "exp_5", name: "Marketing", amount: 12000 },
+      ];
+    }
+
+    function saveExpenses() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.expenses));
+      } catch (e) {}
+    }
+
+    /* ============================================================
+       COMPUTE FINANCIALS
+       ============================================================ */
+
+    function computeFinancials() {
+      let gross = 0;
+      let ticketsSold = 0;
+      let platformFees = 0;
+      let processingFees = 0;
+      let vat = 0;
+
+      state.orders.forEach(order => {
+        gross += Number(order.total) || 0;
+
+        (order.items || []).forEach(item => {
+          const qty = item.quantity || 1;
+          ticketsSold += qty;
+
+          const unit = item.unitPrice || 0;
+          const platform = window.Fees.getPlatformFeeForUnit(unit);
+          platformFees += platform.fee * qty;
+
+          const processing = window.Fees.getProcessingFee(unit * qty, order.gateway || "payfast");
+          processingFees += processing.fee;
+
+          vat += unit * qty * 0.15; // 15% VAT for display purposes
+        });
+      });
+
+      const refunds = 0; // no refunds implemented yet
+      const netRevenue = gross - platformFees - processingFees - refunds;
+
+      const totalExpenses = state.expenses.reduce((s, e) => s + (e.amount || 0), 0);
+
+      // VAT payable: this is the VAT the curator must remit on sales
+      const vatPayable = round(vat, 2);
+
+      const profit = round(netRevenue - totalExpenses - vatPayable, 2);
+
+      // Break-even — how many tickets must sell to cover expenses
+      const avgTicketPrice = ticketsSold > 0 ? gross / ticketsSold : 500;
+      const breakEven = window.Fees.calculateBreakEven({
+        expenses: totalExpenses,
+        unitPrice: avgTicketPrice,
+        gateway: "payfast",
+      });
+
+      const breakEvenPoint = breakEven.feasible ? breakEven.ticketsNeeded : 0;
+
+      state.totals = {
+        gross,
+        ticketsSold,
+        platformFees,
+        processingFees,
+        refunds,
+        vat,
+        vatPayable,
+        netRevenue,
+        totalExpenses,
+        profit,
+        avgTicketPrice,
+        breakEvenPoint,
+        profitMargin: netRevenue > 0 ? (profit / netRevenue) * 100 : 0,
+        perTicketRevenue: ticketsSold > 0 ? netRevenue / ticketsSold : 0,
+        perTicketProfit: ticketsSold > 0 ? profit / ticketsSold : 0,
+      };
+    }
+
+    /* ============================================================
+       RENDER
+       ============================================================ */
+
+    function render() {
+      const t = state.totals;
+
+      // Break-even hero
+      const percent = t.breakEvenPoint > 0
+        ? Math.min(100, Math.round((t.ticketsSold / t.breakEvenPoint) * 100))
+        : (t.ticketsSold > 0 ? 100 : 0);
+
+      const dashArray = 490;
+      const dashOffset = dashArray - (dashArray * percent) / 100;
+
+      const titleEl = document.getElementById("breakEvenTitle");
+      const subtitleEl = document.getElementById("breakEvenSubtitle");
+      const pointEl = document.getElementById("breakEvenPoint");
+      const soldEl = document.getElementById("breakEvenSold");
+      const remainEl = document.getElementById("breakEvenRemaining");
+      const circle = document.getElementById("breakEvenCircle");
+      const percentEl = document.getElementById("breakEvenPercent");
+
+      const remaining = Math.max(0, t.breakEvenPoint - t.ticketsSold);
+
+      if (titleEl) {
+        titleEl.textContent = remaining === 0 && t.breakEvenPoint > 0
+          ? "You're above break-even."
+          : remaining === 0
+            ? "Add expenses to calculate break-even."
+            : `${remaining} more ticket${remaining === 1 ? "" : "s"} to break even.`;
+      }
+
+      if (subtitleEl) {
+        subtitleEl.textContent = t.breakEvenPoint > 0
+          ? `Cover your R${t.totalExpenses.toLocaleString()} in expenses at an average ticket price of ${fmt(t.avgTicketPrice)}.`
+          : "Add operating expenses below to see your break-even point.";
+      }
+
+      if (pointEl) pointEl.textContent = t.breakEvenPoint.toLocaleString();
+      if (soldEl) soldEl.textContent = t.ticketsSold.toLocaleString();
+      if (remainEl) remainEl.textContent = remaining.toLocaleString();
+      if (percentEl) percentEl.textContent = `${percent}%`;
+      if (circle) circle.setAttribute("stroke-dashoffset", String(dashOffset));
+
+      // Chart bars
+      const max = Math.max(t.gross, t.totalExpenses, 1);
+      const grossPct = Math.round((t.gross / max) * 100);
+      const expPct = Math.round((t.totalExpenses / max) * 100);
+
+      setText("chartGross", fmt(t.gross));
+      setText("chartExpenses", fmt(t.totalExpenses));
+      setWidth("chartGrossBar", grossPct + "%");
+      setWidth("chartExpensesBar", expPct + "%");
+      setText("chartGrossMeta", `${t.ticketsSold} ticket${t.ticketsSold === 1 ? "" : "s"} sold`);
+      setText("chartExpensesMeta", `${state.expenses.length} categor${state.expenses.length === 1 ? "y" : "ies"}`);
+
+      // Breakdown
+      setText("rowGross", fmt(t.gross));
+      setText("rowPlatform", `-${fmt(t.platformFees)}`);
+      setText("rowProcessing", `-${fmt(t.processingFees)}`);
+      setText("rowRefunds", `-${fmt(t.refunds)}`);
+      setText("rowNetRevenue", fmt(t.netRevenue));
+      setText("rowExpenses", `-${fmt(t.totalExpenses)}`);
+      setText("rowVat", `-${fmt(t.vatPayable)}`);
+      setText("rowProfit", fmt(t.profit));
+
+      // Margin widget
+      setText("marginPercent", `${Math.round(t.profitMargin)}%`);
+      setText("perTicketRevenue", fmt(t.perTicketRevenue));
+      setText("perTicketProfit", fmt(t.perTicketProfit));
+
+      // Expenses table
+      renderExpenses();
+
+      // Per-event list
+      renderPerEvent();
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function setWidth(id, width) {
+      const el = document.getElementById(id);
+      if (el) el.style.width = width;
+    }
+
+    /* ============================================================
+       EXPENSES
+       ============================================================ */
+
+    function renderExpenses() {
+      const tbody = document.getElementById("expensesBody");
+      if (!tbody) return;
+
+      tbody.innerHTML = state.expenses.map(e => `
+        <tr data-id="${e.id}">
+          <td><input type="text" value="${escapeHTML(e.name)}" placeholder="Expense name" data-field="name"></td>
+          <td class="is-right"><input type="number" value="${e.amount || ""}" placeholder="0" min="0" step="100" data-field="amount" style="text-align:right;"></td>
+          <td>
+            <button class="expense-remove" type="button" data-remove="${e.id}" aria-label="Remove expense">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6 6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      `).join("");
+
+      tbody.querySelectorAll("tr").forEach(row => {
+        const id = row.dataset.id;
+        const expense = state.expenses.find(e => e.id === id);
+
+        row.querySelectorAll("input").forEach(input => {
+          input.addEventListener("input", () => {
+            const field = input.dataset.field;
+            expense[field] = field === "amount" ? Number(input.value) || 0 : input.value;
+            saveExpenses();
+            computeFinancials();
+            render();
+          });
+        });
+      });
+
+      tbody.querySelectorAll("[data-remove]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.remove;
+          state.expenses = state.expenses.filter(e => e.id !== id);
+          saveExpenses();
+          computeFinancials();
+          render();
+          track("curator_expense_removed", { id });
+        });
+      });
+    }
+
+    function addExpense() {
+      state.expenses.push({
+        id: `exp_${Date.now()}`,
+        name: "",
+        amount: 0,
+      });
+      saveExpenses();
+      computeFinancials();
+      render();
+
+      // Focus last name input
+      setTimeout(() => {
+        const inputs = document.querySelectorAll("#expensesBody tr:last-child input");
+        if (inputs[0]) inputs[0].focus();
+      }, 50);
+
+      track("curator_expense_added");
+    }
+
+    /* ============================================================
+       PER-EVENT SUMMARY
+       ============================================================ */
+
+    function renderPerEvent() {
+      const container = document.getElementById("perEventList");
+      if (!container) return;
+
+      // Group orders by event
+      const byEvent = {};
+      state.orders.forEach(order => {
+        if (!byEvent[order.eventId]) {
+          byEvent[order.eventId] = { revenue: 0, tickets: 0 };
+        }
+        byEvent[order.eventId].revenue += Number(order.total) || 0;
+        byEvent[order.eventId].tickets += order.itemCount || 1;
+      });
+
+      const list = Object.entries(byEvent).map(([eventId, data]) => {
+        const event = state.events.find(e => e.id === eventId);
+        return {
+          id: eventId,
+          title: event ? event.title : "Event",
+          revenue: data.revenue,
+          tickets: data.tickets,
+        };
+      }).sort((a, b) => b.revenue - a.revenue);
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:var(--space-6) 0;color:var(--color-text-muted);font-size:var(--text-sm);">
+            No sales yet.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div style="padding:var(--space-3) 0;border-bottom:1px solid var(--color-border);">
+          <div style="display:flex;justify-content:space-between;gap:var(--space-3);margin-bottom:4px;">
+            <span style="font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);">${escapeHTML(item.title)}</span>
+            <span style="font-family:var(--font-serif);font-size:var(--text-md);color:var(--color-text);">${fmt(item.revenue)}</span>
+          </div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);">${item.tickets} ticket${item.tickets === 1 ? "" : "s"}</div>
+        </div>
+      `).join("");
+    }
+
+    /* ============================================================
+       WIRE TOPBAR ACTIONS
+       ============================================================ */
+
+    function wireActions() {
+      document.getElementById("addExpenseBtn")?.addEventListener("click", addExpense);
+
+      document.getElementById("exportBtn")?.addEventListener("click", () => {
+        const rows = [
+          ["Metric", "Value"],
+          ["Gross revenue", state.totals.gross],
+          ["Platform fees", state.totals.platformFees],
+          ["Processing fees", state.totals.processingFees],
+          ["Net revenue", state.totals.netRevenue],
+          ["VAT payable", state.totals.vatPayable],
+          ["Operating expenses", state.totals.totalExpenses],
+          ["Estimated profit", state.totals.profit],
+        ];
+
+        const csv = rows.map(r => r.join(",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `finances-${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast("Exported to CSV.");
+        track("curator_finances_export");
+      });
+
+      document.getElementById("requestPayoutBtn")?.addEventListener("click", () => {
+        showToast("Payout request sent. Processing within 24 hours.");
+        track("curator_payout_request", { amount: state.totals.profit });
+      });
+    }
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+
+    function init() {
+      loadData();
+      computeFinancials();
+      render();
+      wireActions();
+
+      track("page_view", { page: "curator_finances" });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
