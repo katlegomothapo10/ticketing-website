@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#151515">
+  <meta name="description" content="Curator dashboard — track revenue, sell-through, and profit across all your events.">
+
+  <title>Dashboard · Ticketing App for Organizers</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/navigation.css">
+  <link rel="stylesheet" href="../css/homepage.css">
+  <link rel="stylesheet" href="../css/curator.css">
+</head>
+
+<body>
+
+  <div class="curator-app">
+
+    <!-- ============================================================
+         SIDEBAR
+         ============================================================ -->
+    <aside class="curator-sidebar" aria-label="Curator navigation">
+
+      <div class="curator-sidebar-brand">
+        <a href="../index.html" class="logo" aria-label="Ticketing App home">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+      </div>
+
+      <div class="curator-picker">
+        <span class="curator-picker-label">Organizer</span>
+        <button class="curator-picker-btn" type="button">
+          <span class="curator-picker-avatar" aria-hidden="true">SE</span>
+          <span class="curator-picker-info">
+            <span class="curator-picker-name">Sunset Events Co.</span>
+            <span class="curator-picker-role">Verified organizer</span>
+          </span>
+        </button>
+      </div>
+
+      <ul class="curator-nav">
+
+        <li class="curator-nav-section">Overview</li>
+
+        <li>
+          <a class="curator-nav-link is-active" href="index.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="9" rx="1"/>
+              <rect x="14" y="3" width="7" height="5" rx="1"/>
+              <rect x="14" y="12" width="7" height="9" rx="1"/>
+              <rect x="3" y="16" width="7" height="5" rx="1"/>
+            </svg>
+            Dashboard
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="events.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+            Events
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="analytics.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 3v18h18"/>
+              <path d="m19 9-5 5-4-4-3 3"/>
+            </svg>
+            Analytics
+          </a>
+        </li>
+
+        <li class="curator-nav-section">Manage</li>
+
+        <li>
+          <a class="curator-nav-link" href="venue-studio.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18M9 21V9"/>
+            </svg>
+            Venue Studio
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="inventory.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <path d="m3.3 7 8.7 5 8.7-5M12 22V12"/>
+            </svg>
+            Inventory
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="check-in.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M9 12l2 2 4-4"/>
+              <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.02 0 2 .17 2.92.48"/>
+            </svg>
+            Check-in
+          </a>
+        </li>
+
+        <li class="curator-nav-section">Financials</li>
+
+        <li>
+          <a class="curator-nav-link" href="finances.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Finances
+          </a>
+        </li>
+
+        <li>
+          <a class="curator-nav-link" href="payouts.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="2" y="6" width="20" height="12" rx="2"/>
+              <circle cx="12" cy="12" r="2"/>
+              <path d="M6 12h.01M18 12h.01"/>
+            </svg>
+            Payouts
+          </a>
+        </li>
+
+        <li class="curator-nav-section">Account</li>
+
+        <li>
+          <a class="curator-nav-link" href="settings.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            Settings
+          </a>
+        </li>
+
+      </ul>
+
+      <div class="curator-sidebar-footer">
+        <div class="curator-sidebar-user">
+          <span class="curator-user-avatar" aria-hidden="true">SM</span>
+          <span class="curator-user-info">
+            <span class="curator-user-name">Sipho Mokoena</span>
+            <span class="curator-user-role">Owner</span>
+          </span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+    <div class="curator-main">
+
+      <!-- Topbar -->
+      <div class="curator-topbar">
+
+        <div class="curator-topbar-left">
+          <h2 class="curator-topbar-title">Dashboard</h2>
+        </div>
+
+        <div class="curator-topbar-right">
+          <a href="create-event.html" class="btn btn-primary btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            New event
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Content -->
+      <div class="curator-content">
+
+        <!-- Page header -->
+        <div class="curator-page-header">
+
+          <div class="curator-page-header-left">
+            <h1>Good morning.</h1>
+            <p>Here's how your events are performing today.</p>
+          </div>
+
+          <div class="curator-page-header-actions">
+            <a href="finances.html" class="btn btn-secondary">Export report</a>
+            <a href="create-event.html" class="btn btn-primary">Create event</a>
+          </div>
+
+        </div>
+
+        <!-- STAT CARDS — populated by curator.js -->
+        <div class="stat-grid" id="statGrid" aria-live="polite"></div>
+
+        <!-- CHART CARD -->
+        <div class="chart-card">
+
+          <div class="chart-card-header">
+            <div>
+              <h3 class="chart-card-title">Ticket sales</h3>
+              <p class="chart-card-subtitle" id="chartSubtitle">Loading…</p>
+            </div>
+
+            <div class="chart-range" role="group" aria-label="Chart range">
+              <button class="chart-range-btn" type="button" data-days="7">7D</button>
+              <button class="chart-range-btn is-active" type="button" data-days="14">14D</button>
+              <button class="chart-range-btn" type="button" data-days="30">30D</button>
+            </div>
+          </div>
+
+          <div class="chart-area" id="chartArea"></div>
+
+          <div class="chart-legend">
+            <span class="chart-legend-item">
+              <span class="chart-legend-dot is-primary"></span>
+              Revenue per day
+            </span>
+          </div>
+
+        </div>
+
+        <!-- TWO-COLUMN GRID -->
+        <div class="dashboard-grid">
+
+          <!-- EVENTS TABLE -->
+          <div class="data-card">
+
+            <div class="data-card-header">
+              <div>
+                <h3>Your events</h3>
+                <p>Live performance across all events.</p>
+              </div>
+              <a href="events.html" class="side-card-link">
+                View all →
+              </a>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Event</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Sell-through</th>
+                  <th scope="col" class="is-right">Revenue</th>
+                  <th scope="col"><span class="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="eventsTableBody"></tbody>
+            </table>
+
+          </div>
+
+          <!-- SIDEBAR WIDGETS -->
+          <div>
+
+            <!-- Payout widget -->
+            <div class="payout-widget">
+              <div class="payout-widget-label">Next payout</div>
+              <div class="payout-widget-amount" id="payoutAmount">R0</div>
+              <div class="payout-widget-meta" id="payoutMeta">—</div>
+              <button class="btn btn-accent btn-sm" id="payoutBtn" type="button">
+                Request early payout
+              </button>
+            </div>
+
+            <!-- Activity feed -->
+            <div class="side-card" style="margin-top: var(--space-6);">
+              <div class="side-card-header">
+                <h3 class="side-card-title">Recent activity</h3>
+              </div>
+
+              <ul class="activity-feed" id="activityFeed" aria-live="polite"></ul>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- BOTTOM GRID -->
+        <div class="dashboard-grid-equal">
+
+          <!-- Upcoming events -->
+          <div class="side-card">
+
+            <div class="side-card-header">
+              <h3 class="side-card-title">Upcoming events</h3>
+              <a href="events.html" class="side-card-link">View all</a>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Event</th>
+                  <th scope="col" class="is-right">Starts</th>
+                </tr>
+              </thead>
+              <tbody id="upcomingTableBody"></tbody>
+            </table>
+
+          </div>
+
+          <!-- Quick actions -->
+          <div class="side-card">
+
+            <div class="side-card-header">
+              <h3 class="side-card-title">Quick actions</h3>
+            </div>
+
+            <div class="quick-actions">
+
+              <a class="quick-action" href="create-event.html">
+                <span class="quick-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"/>
+                  </svg>
+                </span>
+                <h4 class="quick-action-title">Create event</h4>
+                <p class="quick-action-desc">Launch a new event in minutes.</p>
+              </a>
+
+              <a class="quick-action" href="venue-studio.html">
+                <span class="quick-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M3 9h18M9 21V9"/>
+                  </svg>
+                </span>
+                <h4 class="quick-action-title">Venue Studio</h4>
+                <p class="quick-action-desc">Design your layout with drag &amp; drop.</p>
+              </a>
+
+              <a class="quick-action" href="analytics.html">
+                <span class="quick-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3v18h18"/>
+                    <path d="m19 9-5 5-4-4-3 3"/>
+                  </svg>
+                </span>
+                <h4 class="quick-action-title">Analytics</h4>
+                <p class="quick-action-desc">Deep insights into every sale.</p>
+              </a>
+
+              <a class="quick-action" href="payouts.html">
+                <span class="quick-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="6" width="20" height="12" rx="2"/>
+                    <circle cx="12" cy="12" r="2"/>
+                  </svg>
+                </span>
+                <h4 class="quick-action-title">Request payout</h4>
+                <p class="quick-action-desc">Move funds to your bank today.</p>
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="../js/currency.js"></script>
+  <script src="../js/fees.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/analytics.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/curator.js"></script>
+
+  <script>
+    // Optional: enable debug in dev
+    // Analytics.enableDebug();
+    // Curator.enableDebug();
+  </script>
+
+</body>
+</html>
