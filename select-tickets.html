@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f5f2">
+  <meta name="description" content="Choose your exact seats or tables on the interactive venue map.">
+
+  <title>Select tickets · Ticketing App</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/navigation.css">
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/tickets.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header" id="siteHeader">
+    <nav class="navbar" aria-label="Main navigation">
+
+      <a href="index.html" class="logo" aria-label="Ticketing App home">
+        <span class="logo-mark" aria-hidden="true">TA</span>
+        <span class="logo-text">Ticketing<span>App</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Discover</a></li>
+        <li><a href="events.html" class="nav-link">Events</a></li>
+        <li><a href="venues.html" class="nav-link">Venues</a></li>
+        <li><a href="curator/index.html" class="nav-link">For organizers</a></li>
+      </ul>
+
+      <div class="nav-actions">
+
+        <button class="nav-search" aria-label="Search events">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+
+        <a href="account.html" class="nav-auth">Log in</a>
+
+        <a href="curator/create-event.html" class="nav-cta">
+          Create an event
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobileDrawer"
+        >
+          <span class="nav-toggle-icon" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+
+      </div>
+
+    </nav>
+  </header>
+
+  <!-- ============================================================
+       MOBILE DRAWER
+       ============================================================ -->
+  <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+  <aside
+    class="mobile-drawer"
+    id="mobileDrawer"
+    aria-label="Mobile navigation"
+    aria-hidden="true"
+  >
+    <div class="mobile-drawer-header">
+      <span class="logo-text" style="font-weight:700;">Menu</span>
+      <button class="mobile-drawer-close" id="navClose" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="mobile-drawer-body">
+      <ul class="mobile-nav-list">
+        <li><a href="index.html" class="mobile-nav-link">Discover</a></li>
+        <li><a href="events.html" class="mobile-nav-link">Events</a></li>
+        <li><a href="venues.html" class="mobile-nav-link">Venues</a></li>
+        <li><a href="curator/index.html" class="mobile-nav-link">For organizers</a></li>
+        <li><a href="account.html" class="mobile-nav-link">Log in</a></li>
+      </ul>
+
+      <div class="mobile-actions">
+        <a href="curator/create-event.html" class="btn btn-primary btn-block">
+          Create an event
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN
+       ============================================================ -->
+  <main>
+
+    <section class="tickets-page">
+      <div class="container">
+
+        <!-- ============================================================
+             HEADER
+             ============================================================ -->
+        <div class="tickets-header">
+
+          <div id="ticketsBreadcrumb">
+            <!-- Populated by tickets.js -->
+          </div>
+
+          <h1 id="ticketsTitle">
+            Loading event…
+          </h1>
+
+          <p id="ticketsDescription">
+            Please wait while we load the venue map.
+          </p>
+
+        </div>
+
+        <!-- ============================================================
+             MAIN LAYOUT — Map + Cart
+             ============================================================ -->
+        <div class="tickets-layout">
+
+          <!-- ============================================================
+               MAP CONTAINER
+               ============================================================ -->
+          <div class="map-container">
+
+            <!-- Toolbar -->
+            <div class="map-toolbar">
+              <div class="map-toolbar-group">
+                <button
+                  class="map-toolbar-btn is-active"
+                  id="mapFitBtn"
+                  type="button"
+                  aria-label="Fit map to view"
+                >
+                  FIT
+                </button>
+                <button
+                  class="map-toolbar-btn"
+                  id="mapZoomIn"
+                  type="button"
+                  aria-label="Zoom in"
+                >
+                  +
+                </button>
+                <button
+                  class="map-toolbar-btn"
+                  id="mapZoomOut"
+                  type="button"
+                  aria-label="Zoom out"
+                >
+                  −
+                </button>
+              </div>
+
+              <span class="map-toolbar-status" id="mapStatus">
+                Loading map…
+              </span>
+            </div>
+
+            <!-- Viewport -->
+            <div class="map-viewport" id="mapViewport">
+              <div class="map-canvas" id="mapCanvas">
+
+                <!-- Room frame -->
+                <div class="venue-room-frame"></div>
+
+                <!-- Stage -->
+                <div class="venue-stage">
+                  <div class="venue-stage-title">MAIN STAGE</div>
+                  <div class="venue-stage-sub">LIVE · TONIGHT</div>
+                </div>
+
+                <!-- Sections -->
+                <div class="venue-section venue-section--platinum">
+                  <span class="venue-section-label">Platinum</span>
+                </div>
+                <div class="venue-section venue-section--gold">
+                  <span class="venue-section-label">Gold</span>
+                </div>
+                <div class="venue-section venue-section--silver">
+                  <span class="venue-section-label">Silver</span>
+                </div>
+                <div class="venue-section venue-section--bronze">
+                  <span class="venue-section-label">Bronze</span>
+                </div>
+
+                <!-- Amenities -->
+                <div class="venue-amenity venue-amenity--bar">
+                  <strong>BAR</strong>
+                  <small>VIP Lounge</small>
+                </div>
+                <div class="venue-amenity venue-amenity--dj">
+                  DJ Booth
+                </div>
+
+                <!-- Entrance / Exit -->
+                <div class="venue-entrance"></div>
+                <div class="venue-exit"></div>
+
+                <!-- Loading overlay -->
+                <div class="map-loading" id="mapLoading">
+                  <div class="map-loading-spinner"></div>
+                  <div class="map-loading-text">Rendering venue…</div>
+                </div>
+
+                <!-- Tables injected here by venue-map.js -->
+
+              </div>
+
+              <div class="map-hint">
+                Drag to pan · Click to select
+              </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="map-legend">
+              <span class="map-legend-item">
+                <span class="map-legend-dot map-legend-dot--available"></span>
+                Available
+              </span>
+              <span class="map-legend-item">
+                <span class="map-legend-dot map-legend-dot--reserved"></span>
+                Held
+              </span>
+              <span class="map-legend-item">
+                <span class="map-legend-dot map-legend-dot--sold"></span>
+                Sold
+              </span>
+              <span class="map-legend-item">
+                <span class="map-legend-dot map-legend-dot--selected"></span>
+                Selected
+              </span>
+            </div>
+
+          </div>
+
+          <!-- ============================================================
+               CART SIDEBAR
+               ============================================================ -->
+          <aside class="cart-sidebar" aria-label="Your ticket selection">
+
+            <!-- Tier summary / picker (populated by tickets.js) -->
+            <div id="tierSummary"></div>
+
+            <!-- Header -->
+            <div class="cart-header">
+              <h3>Your selection</h3>
+              <span class="cart-header-count is-empty" id="cartCount">0</span>
+            </div>
+
+            <!-- Body -->
+            <div class="cart-body" id="cartBody">
+              <div class="cart-empty">
+                <div class="cart-empty-icon" aria-hidden="true">◈</div>
+                <h4>Nothing selected yet</h4>
+                <p>
+                  Click any available table on the venue map to add it here.
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="cart-footer" id="cartFooter" style="display:none;">
+              <div class="cart-summary-row is-total">
+                <span>Total</span>
+                <span id="cartTotal">R0</span>
+              </div>
+              <button
+                class="btn btn-primary"
+                id="checkoutBtn"
+                type="button"
+              >
+                Continue to checkout
+              </button>
+              <div class="cart-footer-note">
+                Secure checkout · Instant tickets
+              </div>
+            </div>
+
+          </aside>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <div class="container">
+
+      <div>
+        <a href="index.html" class="logo">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+        <p class="site-footer-tagline">
+          Better ways to experience events. Ticketing, built for how
+          people actually show up.
+        </p>
+      </div>
+
+      <div>
+        <h4>Discover</h4>
+        <ul>
+          <li><a href="events.html">All events</a></li>
+          <li><a href="events.html?category=music">Music</a></li>
+          <li><a href="events.html?category=nightlife">Nightlife</a></li>
+          <li><a href="events.html?category=sports">Sports</a></li>
+          <li><a href="events.html?category=theatre">Theatre</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Organizers</h4>
+        <ul>
+          <li><a href="curator/index.html">Dashboard</a></li>
+          <li><a href="curator/create-event.html">Create an event</a></li>
+          <li><a href="curator/venue-studio.html">Venue Studio</a></li>
+          <li><a href="curator/finances.html">Financials</a></li>
+          <li><a href="curator/payouts.html">Payouts</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="container">
+      <div class="site-footer-bottom">
+        <span>© <span id="footerYear">2026</span> Ticketing App. All rights reserved.</span>
+        <span>Built for how events actually happen.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="js/currency.js"></script>
+  <script src="js/fees.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/venue-map.js"></script>
+  <script src="js/tickets.js"></script>
+
+  <script>
+    // Auto-update footer year
+    (function () {
+      const el = document.getElementById("footerYear");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
+
+    // Optional: enable debug in dev
+    // Analytics.enableDebug();
+    // Nav.enableDebug();
+    // VenueMap.enableDebug();
+    // Tickets.enableDebug();
+  </script>
+
+</body>
+</html>
