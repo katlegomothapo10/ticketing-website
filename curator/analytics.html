@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#151515">
+  <meta name="description" content="Understand exactly how your events are performing.">
+
+  <title>Analytics · Ticketing App for Organizers</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/navigation.css">
+  <link rel="stylesheet" href="../css/homepage.css">
+  <link rel="stylesheet" href="../css/curator.css">
+
+  <style>
+    /* ============================================================
+       ANALYTICS PAGE
+       ============================================================ */
+
+    /* Funnel */
+    .funnel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      padding: var(--space-6);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .funnel-stage {
+      display: grid;
+      grid-template-columns: 160px 1fr 90px 70px;
+      gap: var(--space-4);
+      align-items: center;
+      font-size: var(--text-sm);
+    }
+
+    .funnel-stage-label {
+      color: var(--color-text);
+      font-weight: var(--weight-medium);
+    }
+
+    .funnel-stage-bar {
+      height: 28px;
+      background: var(--color-surface-2);
+      border-radius: var(--radius-xs);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .funnel-stage-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+      border-radius: var(--radius-xs);
+      transition: width var(--transition-slow);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-3);
+      color: #fff;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      min-width: 40px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .funnel-stage-count {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      text-align: right;
+      font-weight: var(--weight-semibold);
+    }
+
+    .funnel-stage-rate {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      text-align: right;
+    }
+
+    .funnel-stage-rate.is-good {
+      color: var(--color-success);
+      font-weight: var(--weight-semibold);
+    }
+
+    /* Hour heatmap */
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      gap: 3px;
+      margin-top: var(--space-4);
+    }
+
+    .heatmap-cell {
+      aspect-ratio: 1;
+      background: var(--color-surface-2);
+      border-radius: 2px;
+      position: relative;
+      transition: transform var(--transition-fast);
+      cursor: default;
+    }
+
+    .heatmap-cell:hover {
+      transform: scale(1.3);
+      z-index: 2;
+    }
+
+    .heatmap-cell[data-level="1"] { background: rgba(184, 148, 74, 0.2); }
+    .heatmap-cell[data-level="2"] { background: rgba(184, 148, 74, 0.4); }
+    .heatmap-cell[data-level="3"] { background: rgba(184, 148, 74, 0.6); }
+    .heatmap-cell[data-level="4"] { background: rgba(184, 148, 74, 0.85); }
+
+    .heatmap-labels {
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      gap: 3px;
+      margin-top: var(--space-2);
+      font-size: 8px;
+      color: var(--color-text-faint);
+      text-align: center;
+    }
+
+    /* Top events list */
+    .top-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .top-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .top-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .top-item:first-child {
+      padding-top: 0;
+    }
+
+    .top-item-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--color-surface-2);
+      color: var(--color-text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-bold);
+      flex-shrink: 0;
+    }
+
+    .top-item:nth-child(1) .top-item-rank {
+      background: linear-gradient(135deg, #d4b87a, #b8944a);
+      color: #fff;
+    }
+
+    .top-item:nth-child(2) .top-item-rank {
+      background: #b8c0c8;
+      color: #fff;
+    }
+
+    .top-item:nth-child(3) .top-item-rank {
+      background: #b28b70;
+      color: #fff;
+    }
+
+    .top-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .top-item-title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text);
+      margin: 0 0 2px 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-item-meta {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    .top-item-value {
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      color: var(--color-text);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* Tier performance */
+    .tier-performance {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .tier-perf-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tier-perf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: var(--text-sm);
+    }
+
+    .tier-perf-name {
+      color: var(--color-text);
+      font-weight: var(--weight-medium);
+    }
+
+    .tier-perf-value {
+      color: var(--color-text-muted);
+      font-size: var(--text-xs);
+    }
+
+    .tier-perf-bar {
+      height: 8px;
+      background: var(--color-surface-2);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .tier-perf-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+      border-radius: var(--radius-full);
+    }
+
+    /* KPI list */
+    .kpi-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kpi-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+    }
+
+    .kpi-row:last-child {
+      border-bottom: 0;
+    }
+
+    .kpi-label {
+      color: var(--color-text-muted);
+    }
+
+    .kpi-value {
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      color: var(--color-text);
+      font-weight: var(--weight-regular);
+    }
+
+    .kpi-value.is-positive {
+      color: var(--color-success);
+    }
+
+    .kpi-value.is-negative {
+      color: var(--color-danger);
+    }
+
+    /* Empty state */
+    .analytics-empty {
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .funnel-stage {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+      }
+
+      .funnel-stage-bar {
+        height: 22px;
+      }
+
+      .funnel-stage-count,
+      .funnel-stage-rate {
+        text-align: left;
+      }
+
+      .heatmap-labels {
+        display: none;
+      }
+
+      .heatmap {
+        grid-template-columns: repeat(12, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="curator-app">
+
+    <!-- ============================================================
+         SIDEBAR
+         ============================================================ -->
+    <aside class="curator-sidebar" aria-label="Curator navigation">
+
+      <div class="curator-sidebar-brand">
+        <a href="../index.html" class="logo" aria-label="Ticketing App home">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+      </div>
+
+      <div class="curator-picker">
+        <span class="curator-picker-label">Organizer</span>
+        <button class="curator-picker-btn" type="button">
+          <span class="curator-picker-avatar" aria-hidden="true">SE</span>
+          <span class="curator-picker-info">
+            <span class="curator-picker-name">Sunset Events Co.</span>
+            <span class="curator-picker-role">Verified organizer</span>
+          </span>
+        </button>
+      </div>
+
+      <ul class="curator-nav">
+
+        <li class="curator-nav-section">Overview</li>
+        <li><a class="curator-nav-link" href="index.html">Dashboard</a></li>
+        <li><a class="curator-nav-link" href="events.html">Events</a></li>
+        <li><a class="curator-nav-link is-active" href="analytics.html">Analytics</a></li>
+
+        <li class="curator-nav-section">Manage</li>
+        <li><a class="curator-nav-link" href="venue-studio.html">Venue Studio</a></li>
+        <li><a class="curator-nav-link" href="inventory.html">Inventory</a></li>
+        <li><a class="curator-nav-link" href="check-in.html">Check-in</a></li>
+
+        <li class="curator-nav-section">Financials</li>
+        <li><a class="curator-nav-link" href="finances.html">Finances</a></li>
+        <li><a class="curator-nav-link" href="payouts.html">Payouts</a></li>
+
+      </ul>
+
+      <div class="curator-sidebar-footer">
+        <div class="curator-sidebar-user">
+          <span class="curator-user-avatar" aria-hidden="true">SM</span>
+          <span class="curator-user-info">
+            <span class="curator-user-name">Sipho Mokoena</span>
+            <span class="curator-user-role">Owner</span>
+          </span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+    <div class="curator-main">
+
+      <div class="curator-topbar">
+        <div class="curator-topbar-left">
+          <h2 class="curator-topbar-title">Analytics</h2>
+        </div>
+        <div class="curator-topbar-right">
+          <div class="chart-range">
+            <button class="chart-range-btn is-active" type="button" data-range="all">All time</button>
+            <button class="chart-range-btn" type="button" data-range="30">30 days</button>
+            <button class="chart-range-btn" type="button" data-range="7">7 days</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="curator-content">
+
+        <!-- Page header -->
+        <div class="curator-page-header">
+          <div class="curator-page-header-left">
+            <h1>Understand every visitor.</h1>
+            <p>Funnels, behaviour, and performance — computed from real user actions.</p>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             KPI CARDS
+             ============================================================ -->
+        <div class="stat-grid" id="kpiGrid"></div>
+
+        <!-- ============================================================
+             CONVERSION FUNNEL
+             ============================================================ -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <h3 class="chart-card-title">Conversion funnel</h3>
+              <p class="chart-card-subtitle" id="funnelSubtitle">From first click to confirmed purchase</p>
+            </div>
+          </div>
+
+          <div class="funnel" id="funnel"></div>
+        </div>
+
+        <!-- ============================================================
+             TWO-COLUMN GRID
+             ============================================================ -->
+        <div class="dashboard-grid">
+
+          <!-- HEATMAP -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-card-title">When people buy</h3>
+                <p class="chart-card-subtitle">Purchases by hour of day</p>
+              </div>
+            </div>
+            <div class="heatmap" id="heatmap"></div>
+            <div class="heatmap-labels" id="heatmapLabels"></div>
+          </div>
+
+          <!-- TOP EVENTS -->
+          <div class="side-card">
+            <div class="side-card-header">
+              <h3 class="side-card-title">Top events</h3>
+              <a href="events.html" class="side-card-link">View all</a>
+            </div>
+            <ul class="top-list" id="topEventsList"></ul>
+          </div>
+
+        </div>
+
+        <!-- ============================================================
+             SECOND ROW
+             ============================================================ -->
+        <div class="dashboard-grid">
+
+          <!-- TIER PERFORMANCE -->
+          <div class="side-card">
+            <div class="side-card-header">
+              <h3 class="side-card-title">Tier performance</h3>
+              <span class="badge">By revenue</span>
+            </div>
+            <div class="tier-performance" id="tierPerformance"></div>
+          </div>
+
+          <!-- KEY METRICS -->
+          <div class="side-card">
+            <div class="side-card-header">
+              <h3 class="side-card-title">Key metrics</h3>
+            </div>
+            <div class="kpi-list" id="kpiList"></div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================
+             TOP SEARCHES
+             ============================================================ -->
+        <div class="side-card">
+          <div class="side-card-header">
+            <h3 class="side-card-title">Top searches</h3>
+            <span class="badge">Last 100 searches</span>
+          </div>
+          <ul class="top-list" id="topSearchesList"></ul>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="../js/currency.js"></script>
+  <script src="../js/fees.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/analytics.js"></script>
+  <script src="../js/navigation.js"></script>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+
+    const state = {
+      range: "all",
+      orders: [],
+      events: [],
+      log: [],
+    };
+
+    /* ============================================================
+       HELPERS
+       ============================================================ */
+
+    function fmt(amount) {
+      if (window.Currency && window.Currency.format) {
+        return window.Currency.format(amount);
+      }
+      return `R${Number(amount || 0).toLocaleString()}`;
+    }
+
+    function fmtCompact(amount) {
+      if (window.Currency && window.Currency.formatCompact) {
+        return window.Currency.formatCompact(amount);
+      }
+      return fmt(amount);
+    }
+
+    function escapeHTML(str) {
+      if (str == null) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function track(name, props) {
+      if (window.Analytics && window.Analytics.track) {
+        window.Analytics.track(name, props);
+      }
+    }
+
+    /* ============================================================
+       LOAD DATA
+       ============================================================ */
+
+    function loadData() {
+      state.orders = window.Data.getOrders() || [];
+      state.events = window.Data.getEvents() || [];
+
+      // Analytics log — window.Analytics.getLog() returns the stored event array
+      if (window.Analytics && window.Analytics.getLog) {
+        state.log = window.Analytics.getLog() || [];
+      } else {
+        state.log = [];
+      }
+    }
+
+    /* ============================================================
+       FILTER BY RANGE
+       ============================================================ */
+
+    function filterByRange(items, range) {
+      if (range === "all") return items;
+
+      const days = parseInt(range, 10);
+      const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+
+      return items.filter(item => {
+        const ts = item.createdAt || item.ts || 0;
+        return ts >= cutoff;
+      });
+    }
+
+    /* ============================================================
+       COMPUTE KPIs
+       ============================================================ */
+
+    function computeKPIs() {
+      const orders = filterByRange(state.orders, state.range);
+      const log = filterByRange(state.log, state.range);
+
+      const revenue = orders.reduce((s, o) => s + (Number(o.total) || 0), 0);
+      const ticketsSold = orders.reduce((s, o) => s + (o.itemCount || 0), 0);
+      const orderCount = orders.length;
+      const aov = orderCount > 0 ? revenue / orderCount : 0;
+
+      const views = log.filter(e => e.name === "event_view").length;
+      const conversion = views > 0 ? (orders.length / views) * 100 : 0;
+
+      return {
+        revenue,
+        ticketsSold,
+        orderCount,
+        aov,
+        views,
+        conversion,
+      };
+    }
+
+    /* ============================================================
+       RENDER — KPI CARDS
+       ============================================================ */
+
+    function renderKPIs() {
+      const grid = document.getElementById("kpiGrid");
+      if (!grid) return;
+
+      const k = computeKPIs();
+
+      grid.innerHTML = `
+        <div class="stat-card is-highlight">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Total revenue</span>
+            <span class="stat-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </span>
+          </div>
+          <div class="stat-card-value">${fmtCompact(k.revenue)}</div>
+          <span class="stat-card-trend is-positive">${k.orderCount} orders</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Tickets sold</span>
+            <span class="stat-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 1 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 1 0 0-4z"/>
+              </svg>
+            </span>
+          </div>
+          <div class="stat-card-value">${k.ticketsSold.toLocaleString()}</div>
+          <span class="stat-card-trend">Lifetime sales</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Average order value</span>
+            <span class="stat-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+            </span>
+          </div>
+          <div class="stat-card-value">${fmt(k.aov)}</div>
+          <span class="stat-card-trend">Per booking</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <span class="stat-card-label">View → purchase</span>
+            <span class="stat-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m19 9-5 5-4-4-3 3"/>
+                <path d="M3 3v18h18"/>
+              </svg>
+            </span>
+          </div>
+          <div class="stat-card-value">${k.conversion.toFixed(1)}%</div>
+          <span class="stat-card-trend is-positive">${k.views} views</span>
+        </div>
+      `;
+    }
+
+    /* ============================================================
+       RENDER — FUNNEL
+       ============================================================ */
+
+    function renderFunnel() {
+      const container = document.getElementById("funnel");
+      if (!container) return;
+
+      const log = filterByRange(state.log, state.range);
+      const orders = filterByRange(state.orders, state.range);
+
+      const counts = {
+        page_view: 0,
+        event_view: 0,
+        tier_select: 0,
+        add_to_cart: 0,
+        begin_checkout: 0,
+        purchase: 0,
+      };
+
+      log.forEach(evt => {
+        if (counts.hasOwnProperty(evt.name)) counts[evt.name]++;
+      });
+
+      // Use the max as funnel baseline for bar widths
+      const max = Math.max(...Object.values(counts), 1);
+
+      const stages = [
+        { key: "page_view", label: "Page views" },
+        { key: "event_view", label: "Event views" },
+        { key: "tier_select", label: "Tier selections" },
+        { key: "add_to_cart", label: "Added to cart" },
+        { key: "begin_checkout", label: "Checkout started" },
+        { key: "purchase", label: "Purchases" },
+      ];
+
+      // If log is empty, seed demo values so the funnel is not blank
+      const hasData = Object.values(counts).some(c => c > 0);
+      if (!hasData) {
+        counts.page_view = 1240;
+        counts.event_view = 682;
+        counts.tier_select = 314;
+        counts.add_to_cart = 148;
+        counts.begin_checkout = 96;
+        counts.purchase = 73;
+      }
+
+      const maxSeeded = Math.max(...Object.values(counts), 1);
+      const baseline = counts.page_view;
+
+      let previousCount = null;
+
+      container.innerHTML = stages.map((stage, i) => {
+        const count = counts[stage.key];
+        const widthPct = Math.round((count / maxSeeded) * 100);
+        const conversionFromPrev = previousCount !== null && previousCount > 0
+          ? Math.round((count / previousCount) * 100)
+          : (baseline > 0 ? Math.round((count / baseline) * 100) : 0);
+        const conversionFromStart = baseline > 0 ? Math.round((count / baseline) * 100) : 0;
+
+        previousCount = count;
+
+        return `
+          <div class="funnel-stage">
+            <span class="funnel-stage-label">${stage.label}</span>
+            <div class="funnel-stage-bar">
+              <div class="funnel-stage-bar-fill" style="width: ${widthPct}%;">
+                ${widthPct > 12 ? `${widthPct}%` : ""}
+              </div>
+            </div>
+            <span class="funnel-stage-count">${count.toLocaleString()}</span>
+            <span class="funnel-stage-rate ${i > 0 && conversionFromPrev > 30 ? "is-good" : ""}">
+              ${i === 0 ? "100%" : conversionFromPrev + "%"}
+            </span>
+          </div>
+        `;
+      }).join("");
+
+      // Update subtitle with overall conversion
+      const final = counts.purchase;
+      const start = counts.page_view;
+      const overall = start > 0 ? ((final / start) * 100).toFixed(1) : "0.0";
+
+      const sub = document.getElementById("funnelSubtitle");
+      if (sub) {
+        sub.textContent = `Overall: ${overall}% of visitors purchase a ticket.`;
+      }
+    }
+
+    /* ============================================================
+       RENDER — HEATMAP (purchases by hour)
+       ============================================================ */
+
+    function renderHeatmap() {
+      const container = document.getElementById("heatmap");
+      const labels = document.getElementById("heatmapLabels");
+      if (!container) return;
+
+      // Seed with demo distribution if no data
+      const purchases = filterByRange(state.orders, state.range);
+      const buckets = new Array(24).fill(0);
+
+      purchases.forEach(o => {
+        const ts = o.createdAt || Date.now();
+        const hour = new Date(ts).getHours();
+        buckets[hour]++;
+      });
+
+      // Seed demo distribution if empty
+      if (buckets.every(v => v === 0)) {
+        [10, 14, 16, 18, 19, 20, 20, 21, 21, 21, 22, 22, 20, 18, 14, 10, 8, 6, 5, 4, 4, 6, 8, 9]
+          .forEach((v, i) => buckets[i] = v);
+      }
+
+      const max = Math.max(...buckets, 1);
+      const level = (v) => {
+        const pct = v / max;
+        if (pct === 0) return 0;
+        if (pct < 0.25) return 1;
+        if (pct < 0.5) return 2;
+        if (pct < 0.75) return 3;
+        return 4;
+      };
+
+      container.innerHTML = buckets.map((v, i) => `
+        <div class="heatmap-cell" data-level="${level(v)}" title="${String(i).padStart(2, "0")}:00 — ${v} purchases"></div>
+      `).join("");
+
+      if (labels) {
+        labels.innerHTML = buckets.map((_, i) => i % 4 === 0 ? String(i).padStart(2, "0") : "").join("");
+      }
+    }
+
+    /* ============================================================
+       RENDER — TOP EVENTS
+       ============================================================ */
+
+    function renderTopEvents() {
+      const list = document.getElementById("topEventsList");
+      if (!list) return;
+
+      const orders = filterByRange(state.orders, state.range);
+
+      const byEvent = {};
+      orders.forEach(o => {
+        if (!byEvent[o.eventId]) {
+          byEvent[o.eventId] = { revenue: 0, tickets: 0, orders: 0 };
+        }
+        byEvent[o.eventId].revenue += Number(o.total) || 0;
+        byEvent[o.eventId].tickets += o.itemCount || 0;
+        byEvent[o.eventId].orders++;
+      });
+
+      const rows = Object.entries(byEvent)
+        .map(([id, data]) => {
+          const event = state.events.find(e => e.id === id);
+          return {
+            id,
+            title: event ? event.title : "Event",
+            ...data,
+          };
+        })
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5);
+
+      if (rows.length === 0) {
+        list.innerHTML = `
+          <li class="analytics-empty">
+            No sales yet. <a href="create-event.html" class="link-accent">Create an event</a> to start tracking.
+          </li>
+        `;
+        return;
+      }
+
+      list.innerHTML = rows.map((row, i) => `
+        <li class="top-item">
+          <span class="top-item-rank">${i + 1}</span>
+          <div class="top-item-content">
+            <div class="top-item-title">${escapeHTML(row.title)}</div>
+            <div class="top-item-meta">${row.tickets} tickets · ${row.orders} orders</div>
+          </div>
+          <span class="top-item-value">${fmt(row.revenue)}</span>
+        </li>
+      `).join("");
+    }
+
+    /* ============================================================
+       RENDER — TIER PERFORMANCE
+       ============================================================ */
+
+    function renderTierPerformance() {
+      const container = document.getElementById("tierPerformance");
+      if (!container) return;
+
+      // Aggregate sold per tier across all events
+      const tiers = {};
+      state.events.forEach(event => {
+        (event.ticketTiers || []).forEach(tier => {
+          if (!tiers[tier.name]) {
+            tiers[tier.name] = { name: tier.name, sold: 0, capacity: 0, revenue: 0, price: tier.price };
+          }
+          const sold = (tier.capacity - tier.available) || 0;
+          tiers[tier.name].sold += sold;
+          tiers[tier.name].capacity += tier.capacity || 0;
+          tiers[tier.name].revenue += sold * (tier.price || 0);
+        });
+      });
+
+      const rows = Object.values(tiers).sort((a, b) => b.revenue - a.revenue);
+      const maxRevenue = Math.max(...rows.map(r => r.revenue), 1);
+
+      if (rows.length === 0) {
+        container.innerHTML = `<div class="analytics-empty">No tiers yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = rows.map(r => {
+        const pct = Math.round((r.revenue / maxRevenue) * 100);
+        return `
+          <div class="tier-perf-row">
+            <div class="tier-perf-header">
+              <span class="tier-perf-name">${escapeHTML(r.name)}</span>
+              <span class="tier-perf-value">${fmt(r.revenue)} · ${r.sold}/${r.capacity} sold</span>
+            </div>
+            <div class="tier-perf-bar">
+              <div class="tier-perf-fill" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    /* ============================================================
+       RENDER — KEY METRICS
+       ============================================================ */
+
+    function renderKeyMetrics() {
+      const list = document.getElementById("kpiList");
+      if (!list) return;
+
+      const orders = filterByRange(state.orders, state.range);
+      const totalRevenue = orders.reduce((s, o) => s + (Number(o.total) || 0), 0);
+      const totalTickets = orders.reduce((s, o) => s + (o.itemCount || 0), 0);
+
+      // Sell-through across all events
+      let capacity = 0, sold = 0;
+      state.events.forEach(e => {
+        (e.ticketTiers || []).forEach(t => {
+          capacity += t.capacity || 0;
+          sold += (t.capacity - t.available) || 0;
+        });
+      });
+      const sellThrough = capacity > 0 ? Math.round((sold / capacity) * 100) : 0;
+
+      // Simulated refund rate
+      const refundRate = 1.2;
+
+      // Conversion from log
+      const views = filterByRange(state.log, state.range).filter(e => e.name === "event_view").length;
+      const conversion = views > 0 ? ((orders.length / views) * 100) : 0;
+
+      const rows = [
+        { label: "Sell-through rate", value: `${sellThrough}%` },
+        { label: "Average tickets per order", value: orders.length > 0 ? (totalTickets / orders.length).toFixed(1) : "0" },
+        { label: "Refund rate", value: `${refundRate}%`, className: "is-positive" },
+        { label: "Page → purchase", value: `${conversion.toFixed(1)}%` },
+        { label: "Unique visitors", value: views.toLocaleString() },
+        { label: "Revenue per visitor", value: views > 0 ? fmt(totalRevenue / views) : "R0" },
+      ];
+
+      list.innerHTML = rows.map(r => `
+        <div class="kpi-row">
+          <span class="kpi-label">${escapeHTML(r.label)}</span>
+          <span class="kpi-value ${r.className || ""}">${escapeHTML(r.value)}</span>
+        </div>
+      `).join("");
+    }
+
+    /* ============================================================
+       RENDER — TOP SEARCHES
+       ============================================================ */
+
+    function renderTopSearches() {
+      const list = document.getElementById("topSearchesList");
+      if (!list) return;
+
+      const searches = {};
+      filterByRange(state.log, state.range).forEach(evt => {
+        if (evt.name !== "search") return;
+        const q = (evt.props && evt.props.query || "").trim().toLowerCase();
+        if (!q) return;
+        searches[q] = (searches[q] || 0) + 1;
+      });
+
+      let rows = Object.entries(searches)
+        .map(([query, count]) => ({ query, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+      // Seed demo searches if empty
+      if (rows.length === 0) {
+        rows = [
+          { query: "east meets west", count: 42 },
+          { query: "jazz cape town", count: 28 },
+          { query: "derby day", count: 21 },
+          { query: "afro nation", count: 19 },
+          { query: "gqom nights", count: 14 },
+        ];
+      }
+
+      list.innerHTML = rows.map((row, i) => `
+        <li class="top-item">
+          <span class="top-item-rank">${i + 1}</span>
+          <div class="top-item-content">
+            <div class="top-item-title">"${escapeHTML(row.query)}"</div>
+          </div>
+          <span class="top-item-value">${row.count} searches</span>
+        </li>
+      `).join("");
+    }
+
+    /* ============================================================
+       RENDER ALL
+       ============================================================ */
+
+    function renderAll() {
+      renderKPIs();
+      renderFunnel();
+      renderHeatmap();
+      renderTopEvents();
+      renderTierPerformance();
+      renderKeyMetrics();
+      renderTopSearches();
+    }
+
+    /* ============================================================
+       WIRE RANGE TOGGLES
+       ============================================================ */
+
+    function wireRangeToggle() {
+      document.querySelectorAll("[data-range]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-range]").forEach(b => b.classList.remove("is-active"));
+          btn.classList.add("is-active");
+          state.range = btn.dataset.range;
+          renderAll();
+          track("curator_analytics_range", { range: state.range });
+        });
+      });
+    }
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+
+    function init() {
+      loadData();
+      renderAll();
+      wireRangeToggle();
+
+      track("page_view", { page: "curator_analytics" });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
