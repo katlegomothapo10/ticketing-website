@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#151515">
+  <meta name="description" content="Manage your payouts, bank details, and payout schedule.">
+
+  <title>Payouts · Ticketing App for Organizers</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/navigation.css">
+  <link rel="stylesheet" href="../css/homepage.css">
+  <link rel="stylesheet" href="../css/curator.css">
+
+  <style>
+    /* ============================================================
+       PAYOUTS PAGE
+       ============================================================ */
+
+    /* Balance hero */
+    .balance-hero {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: var(--space-6);
+      margin-bottom: var(--space-8);
+    }
+
+    .balance-card {
+      padding: var(--space-8);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .balance-card.is-primary {
+      background: linear-gradient(135deg, #2c2418 0%, #151515 100%);
+      color: var(--color-text-inverse);
+    }
+
+    .balance-card.is-primary::before {
+      content: "";
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 70%;
+      height: 200%;
+      background: radial-gradient(
+        circle,
+        rgba(184, 148, 74, 0.28) 0%,
+        transparent 60%
+      );
+      pointer-events: none;
+    }
+
+    .balance-card.is-secondary {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+    }
+
+    .balance-label {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-widest);
+      text-transform: uppercase;
+      margin-bottom: var(--space-3);
+      position: relative;
+    }
+
+    .balance-card.is-primary .balance-label {
+      color: var(--color-accent);
+    }
+
+    .balance-card.is-secondary .balance-label {
+      color: var(--color-text-faint);
+    }
+
+    .balance-value {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: var(--weight-regular);
+      letter-spacing: var(--tracking-tight);
+      line-height: 1;
+      margin-bottom: var(--space-4);
+      position: relative;
+    }
+
+    .balance-card.is-primary .balance-value {
+      color: var(--color-text-inverse);
+    }
+
+    .balance-card.is-secondary .balance-value {
+      color: var(--color-text);
+    }
+
+    .balance-meta {
+      font-size: var(--text-sm);
+      position: relative;
+    }
+
+    .balance-card.is-primary .balance-meta {
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .balance-card.is-secondary .balance-meta {
+      color: var(--color-text-muted);
+    }
+
+    .balance-actions {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-6);
+      position: relative;
+      flex-wrap: wrap;
+    }
+
+    .balance-actions .btn {
+      height: 44px;
+      font-size: var(--text-xs);
+    }
+
+    .balance-actions .btn-ghost-light {
+      background: transparent;
+      color: var(--color-text-inverse);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .balance-actions .btn-ghost-light:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Pending schedule info */
+    .pending-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .pending-info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-3);
+      font-size: var(--text-sm);
+    }
+
+    .pending-info-row span:first-child {
+      color: var(--color-text-muted);
+    }
+
+    .pending-info-row span:last-child {
+      color: var(--color-text);
+      font-weight: var(--weight-medium);
+    }
+
+    /* Bank card */
+    .bank-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-6);
+    }
+
+    .bank-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: var(--color-accent-glow);
+      color: var(--color-accent-dark);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.25rem;
+    }
+
+    .bank-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .bank-name {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text);
+      margin: 0 0 2px 0;
+    }
+
+    .bank-account {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .bank-verified {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--text-2xs);
+      color: var(--color-success);
+      font-weight: var(--weight-semibold);
+      margin-top: 4px;
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+    }
+
+    /* Schedule picker */
+    .schedule-picker {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .schedule-option {
+      padding: var(--space-5);
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+      position: relative;
+    }
+
+    .schedule-option:hover {
+      border-color: var(--color-border-strong);
+    }
+
+    .schedule-option.is-selected {
+      border-color: var(--color-accent);
+      background: var(--color-accent-glow);
+    }
+
+    .schedule-option.is-selected::after {
+      content: "✓";
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      color: var(--color-accent-dark);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .schedule-option-name {
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      color: var(--color-text);
+      margin: 0 0 4px 0;
+    }
+
+    .schedule-option-desc {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      line-height: var(--leading-relaxed);
+      margin: 0 0 var(--space-3) 0;
+    }
+
+    .schedule-option-fee {
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      color: var(--color-accent-dark);
+    }
+
+    /* Payout history table */
+    .payout-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .payout-table th {
+      text-align: left;
+      font-size: var(--text-2xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: var(--tracking-wider);
+      text-transform: uppercase;
+      color: var(--color-text-faint);
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface-2);
+      white-space: nowrap;
+    }
+
+    .payout-table th.is-right { text-align: right; }
+
+    .payout-table td {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+      font-size: var(--text-sm);
+      color: var(--color-text);
+      vertical-align: middle;
+    }
+
+    .payout-table td.is-right {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: var(--text-md);
+    }
+
+    .payout-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .payout-ref {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-accent-dark);
+      letter-spacing: 1px;
+    }
+
+    .payout-event {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--color-text);
+      margin-bottom: 2px;
+    }
+
+    .payout-date {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--color-overlay);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-6);
+    }
+
+    .modal-overlay.is-open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      max-width: 480px;
+      width: 100%;
+      padding: var(--space-8);
+      position: relative;
+    }
+
+    .modal h3 {
+      font-family: var(--font-serif);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-regular);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .modal p {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-5);
+      line-height: var(--leading-relaxed);
+    }
+
+    .modal-summary {
+      padding: var(--space-4);
+      background: var(--color-surface-2);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-5);
+    }
+
+    .modal-summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      font-size: var(--text-sm);
+    }
+
+    .modal-summary-row.is-total {
+      padding-top: var(--space-3);
+      margin-top: var(--space-3);
+      border-top: 1px solid var(--color-border);
+      font-family: var(--font-serif);
+      font-size: var(--text-lg);
+      color: var(--color-text);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: flex-end;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .balance-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .schedule-picker {
+        grid-template-columns: 1fr;
+      }
+
+      .payout-table thead { display: none; }
+      .payout-table, .payout-table tbody, .payout-table tr, .payout-table td {
+        display: block;
+      }
+      .payout-table tr {
+        padding: var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+      }
+      .payout-table td {
+        padding: var(--space-1) 0;
+        border-bottom: 0;
+      }
+      .payout-table td.is-right {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .balance-card {
+        padding: var(--space-6);
+      }
+
+      .balance-actions {
+        flex-direction: column;
+      }
+
+      .balance-actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="curator-app">
+
+    <!-- ============================================================
+         SIDEBAR
+         ============================================================ -->
+    <aside class="curator-sidebar" aria-label="Curator navigation">
+
+      <div class="curator-sidebar-brand">
+        <a href="../index.html" class="logo" aria-label="Ticketing App home">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+      </div>
+
+      <div class="curator-picker">
+        <span class="curator-picker-label">Organizer</span>
+        <button class="curator-picker-btn" type="button">
+          <span class="curator-picker-avatar" aria-hidden="true">SE</span>
+          <span class="curator-picker-info">
+            <span class="curator-picker-name">Sunset Events Co.</span>
+            <span class="curator-picker-role">Verified organizer</span>
+          </span>
+        </button>
+      </div>
+
+      <ul class="curator-nav">
+
+        <li class="curator-nav-section">Overview</li>
+        <li><a class="curator-nav-link" href="index.html">Dashboard</a></li>
+        <li><a class="curator-nav-link" href="events.html">Events</a></li>
+        <li><a class="curator-nav-link" href="analytics.html">Analytics</a></li>
+
+        <li class="curator-nav-section">Manage</li>
+        <li><a class="curator-nav-link" href="venue-studio.html">Venue Studio</a></li>
+        <li><a class="curator-nav-link" href="inventory.html">Inventory</a></li>
+        <li><a class="curator-nav-link" href="check-in.html">Check-in</a></li>
+
+        <li class="curator-nav-section">Financials</li>
+        <li><a class="curator-nav-link" href="finances.html">Finances</a></li>
+        <li><a class="curator-nav-link is-active" href="payouts.html">Payouts</a></li>
+
+      </ul>
+
+      <div class="curator-sidebar-footer">
+        <div class="curator-sidebar-user">
+          <span class="curator-user-avatar" aria-hidden="true">SM</span>
+          <span class="curator-user-info">
+            <span class="curator-user-name">Sipho Mokoena</span>
+            <span class="curator-user-role">Owner</span>
+          </span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+    <div class="curator-main">
+
+      <div class="curator-topbar">
+        <div class="curator-topbar-left">
+          <h2 class="curator-topbar-title">Payouts</h2>
+        </div>
+        <div class="curator-topbar-right">
+          <button class="btn btn-secondary btn-sm" id="exportPayoutsBtn" type="button">
+            Export CSV
+          </button>
+          <button class="btn btn-primary btn-sm" id="requestPayoutTopBtn" type="button">
+            Request payout
+          </button>
+        </div>
+      </div>
+
+      <div class="curator-content">
+
+        <!-- Page header -->
+        <div class="curator-page-header">
+          <div class="curator-page-header-left">
+            <h1>Get paid.</h1>
+            <p>Track what's ready, what's pending, and what's already in your bank.</p>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             BALANCE HERO
+             ============================================================ -->
+        <div class="balance-hero">
+
+          <!-- Available now -->
+          <div class="balance-card is-primary">
+            <div class="balance-label">Available to pay out</div>
+            <div class="balance-value" id="availableBalance">R0</div>
+            <div class="balance-meta" id="availableMeta">
+              Ready to withdraw immediately
+            </div>
+
+            <div class="balance-actions">
+              <button class="btn btn-accent" id="withdrawNowBtn" type="button">
+                Withdraw now
+              </button>
+              <button class="btn btn-ghost-light" id="expressPayoutBtn" type="button">
+                Express (1 day)
+              </button>
+            </div>
+          </div>
+
+          <!-- Pending -->
+          <div class="balance-card is-secondary">
+            <div class="balance-label">Pending balance</div>
+            <div class="balance-value" id="pendingBalance">R0</div>
+            <div class="balance-meta" id="pendingMeta">
+              Releases after each event completes
+            </div>
+
+            <div class="pending-info">
+              <div class="pending-info-row">
+                <span>Next release</span>
+                <span id="nextReleaseDate">—</span>
+              </div>
+              <div class="pending-info-row">
+                <span>Total paid out</span>
+                <span id="totalPaidOut">R0</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================
+             BANK ACCOUNT
+             ============================================================ -->
+        <div class="bank-card">
+          <div class="bank-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;">
+              <path d="M3 10 12 3l9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <path d="M8 21v-8h8v8"/>
+            </svg>
+          </div>
+          <div class="bank-info">
+            <p class="bank-name" id="bankName">Standard Bank</p>
+            <p class="bank-account" id="bankAccount">•••• •••• 4821</p>
+            <span class="bank-verified">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:10px;height:10px;">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+              Verified account
+            </span>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="editBankBtn" type="button">
+            Edit
+          </button>
+        </div>
+
+        <!-- ============================================================
+             PAYOUT SCHEDULE
+             ============================================================ -->
+        <div class="side-card">
+          <div class="side-card-header">
+            <h3 class="side-card-title">Payout schedule</h3>
+          </div>
+
+          <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin:0 0 var(--space-5) 0;line-height:var(--leading-relaxed);">
+            Choose when your money lands. Standard is free — express costs a small fee.
+          </p>
+
+          <div class="schedule-picker">
+            <div class="schedule-option is-selected" data-schedule="standard">
+              <h4 class="schedule-option-name">Standard</h4>
+              <p class="schedule-option-desc">
+                Funds release automatically 7 days after your event completes.
+                No fee.
+              </p>
+              <span class="schedule-option-fee">Free</span>
+            </div>
+
+            <div class="schedule-option" data-schedule="express">
+              <h4 class="schedule-option-name">Express</h4>
+              <p class="schedule-option-desc">
+                Funds release the next business day. Ideal for tight cash flow.
+              </p>
+              <span class="schedule-option-fee">1.5% fee</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             PAYOUT HISTORY
+             ============================================================ -->
+        <div class="data-card">
+          <div class="data-card-header">
+            <div>
+              <h3>Payout history</h3>
+              <p>Every payout to your bank account.</p>
+            </div>
+          </div>
+
+          <table class="payout-table">
+            <thead>
+              <tr>
+                <th scope="col">Payout</th>
+                <th scope="col">Date</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="is-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="payoutTableBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       PAYOUT MODAL
+       ============================================================ -->
+  <div class="modal-overlay" id="payoutModal">
+    <div class="modal">
+      <h3 id="modalTitle">Request payout</h3>
+      <p id="modalDesc">
+        Confirm the payout to your registered bank account.
+      </p>
+
+      <div class="modal-summary">
+        <div class="modal-summary-row">
+          <span>Available balance</span>
+          <span id="modalAvailable">R0</span>
+        </div>
+        <div class="modal-summary-row" id="modalFeeRow" style="display:none;">
+          <span>Express fee (1.5%)</span>
+          <span id="modalFee">-R0</span>
+        </div>
+        <div class="modal-summary-row is-total">
+          <span>You'll receive</span>
+          <span id="modalTotal">R0</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="modalCancel" type="button">Cancel</button>
+        <button class="btn btn-primary" id="modalConfirm" type="button">Confirm payout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="../js/currency.js"></script>
+  <script src="../js/fees.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/analytics.js"></script>
+  <script src="../js/navigation.js"></script>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+
+    const state = {
+      orders: [],
+      payouts: [],
+      available: 0,
+      pending: 0,
+      totalPaidOut: 0,
+      schedule: "standard",
+      bank: {
+        name: "Standard Bank",
+        account: "•••• •••• 4821",
+      },
+    };
+
+    const STORAGE_KEY = "ticketing_app:curatorPayouts";
+    const SCHEDULE_KEY = "ticketing_app:curatorSchedule";
+    const BANK_KEY = "ticketing_app:curatorBank";
+
+    /* ============================================================
+       HELPERS
+       ============================================================ */
+
+    function fmt(amount) {
+      if (window.Currency && window.Currency.format) {
+        return window.Currency.format(amount);
+      }
+      return `R${Number(amount || 0).toLocaleString()}`;
+    }
+
+    function round(v, d) {
+      const f = Math.pow(10, d || 0);
+      return Math.round(v * f) / f;
+    }
+
+    function escapeHTML(str) {
+      if (str == null) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatDate(ts) {
+      const d = new Date(ts);
+      return `${d.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function showToast(message) {
+      const existing = document.querySelector(".curator-toast");
+      if (existing) existing.remove();
+      const t = document.createElement("div");
+      t.className = "curator-toast";
+      t.textContent = message;
+      t.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--color-dark);color:var(--color-text-inverse);padding:12px 20px;border-radius:9999px;font-size:var(--text-sm);z-index:9999;box-shadow:var(--shadow-lg);";
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2400);
+    }
+
+    function track(name, props) {
+      if (window.Analytics && window.Analytics.track) {
+        window.Analytics.track(name, props);
+      }
+    }
+
+    /* ============================================================
+       LOAD DATA
+       ============================================================ */
+
+    function loadData() {
+      state.orders = window.Data.getOrders() || [];
+
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        state.payouts = raw ? JSON.parse(raw) : defaultPayouts();
+      } catch (e) {
+        state.payouts = defaultPayouts();
+      }
+
+      try {
+        const s = localStorage.getItem(SCHEDULE_KEY);
+        if (s === "express" || s === "standard") state.schedule = s;
+      } catch (e) {}
+
+      try {
+        const b = localStorage.getItem(BANK_KEY);
+        if (b) state.bank = JSON.parse(b);
+      } catch (e) {}
+    }
+
+    function defaultPayouts() {
+      // Demo history
+      const now = Date.now();
+      return [
+        { id: "po_1", reference: "PAY-2026-0091", eventTitle: "East Meets West (Early Bird)", status: "paid", amount: 128500, ts: now - 1000 * 60 * 60 * 24 * 34 },
+        { id: "po_2", reference: "PAY-2026-0102", eventTitle: "Summer Sound Festival", status: "paid", amount: 64300, ts: now - 1000 * 60 * 60 * 24 * 18 },
+        { id: "po_3", reference: "PAY-2026-0118", eventTitle: "Gqom Nights", status: "pending", amount: 42300, ts: now - 1000 * 60 * 60 * 24 * 3 },
+      ];
+    }
+
+    function savePayouts() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.payouts));
+      } catch (e) {}
+    }
+
+    function saveSchedule() {
+      try {
+        localStorage.setItem(SCHEDULE_KEY, state.schedule);
+      } catch (e) {}
+    }
+
+    function saveBank() {
+      try {
+        localStorage.setItem(BANK_KEY, JSON.stringify(state.bank));
+      } catch (e) {}
+    }
+
+    /* ============================================================
+       COMPUTE BALANCES
+       ============================================================ */
+
+    function computeBalances() {
+      // Available = revenue from past events (date < now) not yet paid out
+      // Pending = revenue from future events (date >= now) - held until event completes
+
+      const now = Date.now();
+
+      let pastRevenue = 0;
+      let futureRevenue = 0;
+
+      state.orders.forEach(order => {
+        const event = window.Data.getEvent(order.eventId);
+        if (!event) return;
+
+        const amount = Number(order.total) || 0;
+        const eventDate = new Date(event.date).getTime();
+
+        if (eventDate < now) {
+          pastRevenue += amount;
+        } else {
+          futureRevenue += amount;
+        }
+      });
+
+      const totalPayoutsToPaid = state.payouts
+        .filter(p => p.status === "paid")
+        .reduce((s, p) => s + (Number(p.amount) || 0), 0);
+
+      const totalPayoutsPending = state.payouts
+        .filter(p => p.status === "pending")
+        .reduce((s, p) => s + (Number(p.amount) || 0), 0);
+
+      // Available = past-event revenue minus already paid
+      let available = pastRevenue - totalPayoutsToPaid - totalPayoutsPending;
+
+      // If nothing has sold yet, seed a demo value so the page is not empty
+      if (available < 0) available = 0;
+      if (available === 0 && state.payouts.length <= defaultPayouts().length) {
+        available = 217575;
+      }
+
+      state.available = available;
+      state.pending = futureRevenue;
+      state.totalPaidOut = totalPayoutsToPaid;
+
+      // Next release date — 7 days after the next upcoming event
+      const upcoming = state.orders
+        .map(o => window.Data.getEvent(o.eventId))
+        .filter(Boolean)
+        .filter(e => new Date(e.date).getTime() >= now)
+        .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+
+      state.nextReleaseTs = upcoming
+        ? new Date(upcoming.date).getTime() + 7 * 24 * 60 * 60 * 1000
+        : now + 7 * 24 * 60 * 60 * 1000;
+    }
+
+    /* ============================================================
+       RENDER
+       ============================================================ */
+
+    function render() {
+      // Balances
+      setText("availableBalance", fmt(state.available));
+      setText("pendingBalance", fmt(state.pending));
+      setText("totalPaidOut", fmt(state.totalPaidOut));
+      setText("nextReleaseDate", formatDate(state.nextReleaseTs));
+
+      // Bank
+      setText("bankName", state.bank.name);
+      setText("bankAccount", state.bank.account);
+
+      // Schedule selection
+      document.querySelectorAll("[data-schedule]").forEach(el => {
+        el.classList.toggle("is-selected", el.dataset.schedule === state.schedule);
+      });
+
+      // Payout history
+      renderPayoutTable();
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function renderPayoutTable() {
+      const tbody = document.getElementById("payoutTableBody");
+      if (!tbody) return;
+
+      if (state.payouts.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align:center;padding:var(--space-8);color:var(--color-text-muted);">
+              No payouts yet.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const sorted = state.payouts.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0));
+
+      tbody.innerHTML = sorted.map(p => {
+        const statusClass =
+          p.status === "paid" ? "is-live"
+          : p.status === "pending" ? "is-scheduled"
+          : "is-draft";
+
+        const statusLabel =
+          p.status === "paid" ? "Paid"
+          : p.status === "pending" ? "Pending"
+          : "Failed";
+
+        return `
+          <tr>
+            <td>
+              <div class="payout-event">${escapeHTML(p.eventTitle || "Payout")}</div>
+              <div class="payout-ref">${escapeHTML(p.reference)}</div>
+            </td>
+            <td><span class="payout-date">${formatDate(p.ts)}</span></td>
+            <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+            <td class="is-right">${fmt(p.amount)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    /* ============================================================
+       PAYOUT ACTIONS
+       ============================================================ */
+
+    function openPayoutModal(express) {
+      if (state.available <= 0) {
+        showToast("No funds available to pay out.");
+        return;
+      }
+
+      const modal = document.getElementById("payoutModal");
+      const feeRow = document.getElementById("modalFeeRow");
+      const title = document.getElementById("modalTitle");
+      const desc = document.getElementById("modalDesc");
+
+      const feeRate = 0.015;
+      const fee = express ? round(state.available * feeRate, 2) : 0;
+      const payout = round(state.available - fee, 2);
+
+      setText("modalAvailable", fmt(state.available));
+      setText("modalTotal", fmt(payout));
+
+      if (express && fee > 0) {
+        feeRow.style.display = "flex";
+        setText("modalFee", "-" + fmt(fee));
+      } else {
+        feeRow.style.display = "none";
+      }
+
+      if (title) title.textContent = express ? "Express payout" : "Standard payout";
+      if (desc) {
+        desc.textContent = express
+          ? "Funds will arrive in your bank account within 1 business day."
+          : "Funds will arrive in your bank account within 7 days.";
+      }
+
+      modal.dataset.express = express ? "1" : "0";
+      modal.dataset.fee = String(fee);
+      modal.dataset.payout = String(payout);
+
+      modal.classList.add("is-open");
+
+      track("curator_payout_modal_open", { express: !!express, amount: state.available });
+    }
+
+    function closePayoutModal() {
+      document.getElementById("payoutModal")?.classList.remove("is-open");
+    }
+
+    function confirmPayout() {
+      const modal = document.getElementById("payoutModal");
+      const express = modal.dataset.express === "1";
+      const fee = Number(modal.dataset.fee) || 0;
+      const payout = Number(modal.dataset.payout) || state.available;
+
+      const reference = `PAY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      state.payouts.push({
+        id: "po_" + Date.now(),
+        reference: reference,
+        eventTitle: express ? "Express payout" : "Standard payout",
+        status: "paid",
+        amount: payout,
+        fee: fee,
+        ts: Date.now(),
+      });
+
+      savePayouts();
+      closePayoutModal();
+
+      computeBalances();
+      render();
+
+      showToast(`Payout ${reference} sent. ${fmt(payout)} on the way.`);
+      track("curator_payout_completed", { amount: payout, express: express, fee: fee });
+    }
+
+    /* ============================================================
+       EXPORT
+       ============================================================ */
+
+    function exportPayoutsCSV() {
+      const rows = [
+        ["Reference", "Event", "Date", "Status", "Amount"],
+        ...state.payouts.map(p => [
+          p.reference,
+          p.eventTitle,
+          new Date(p.ts).toISOString().slice(0, 10),
+          p.status,
+          p.amount,
+        ]),
+      ];
+
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `payouts-${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast("Exported to CSV.");
+      track("curator_payouts_export");
+    }
+
+    /* ============================================================
+       WIRE UI
+       ============================================================ */
+
+    function wireUI() {
+      document.getElementById("withdrawNowBtn")?.addEventListener("click", () => openPayoutModal(false));
+      document.getElementById("requestPayoutTopBtn")?.addEventListener("click", () => openPayoutModal(false));
+      document.getElementById("expressPayoutBtn")?.addEventListener("click", () => openPayoutModal(true));
+
+      document.getElementById("modalCancel")?.addEventListener("click", closePayoutModal);
+      document.getElementById("modalConfirm")?.addEventListener("click", confirmPayout);
+
+      document.getElementById("payoutModal")?.addEventListener("click", (e) => {
+        if (e.target.id === "payoutModal") closePayoutModal();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closePayoutModal();
+      });
+
+      document.getElementById("exportPayoutsBtn")?.addEventListener("click", exportPayoutsCSV);
+
+      // Schedule picker
+      document.querySelectorAll("[data-schedule]").forEach(el => {
+        el.addEventListener("click", () => {
+          state.schedule = el.dataset.schedule;
+          saveSchedule();
+          render();
+          showToast(`Schedule set to ${state.schedule === "express" ? "Express" : "Standard"}.`);
+          track("curator_schedule_change", { schedule: state.schedule });
+        });
+      });
+
+      // Bank edit
+      document.getElementById("editBankBtn")?.addEventListener("click", () => {
+        const name = prompt("Bank name:", state.bank.name);
+        if (name === null) return;
+        const acct = prompt("Account number (masked will be applied):", state.bank.account);
+        if (acct === null) return;
+
+        state.bank.name = name.trim() || state.bank.name;
+        // Mask: show last 4
+        const digits = acct.replace(/\D/g, "");
+        const last4 = digits.slice(-4) || "4821";
+        state.bank.account = `•••• •••• ${last4}`;
+        saveBank();
+        render();
+        showToast("Bank details updated.");
+        track("curator_bank_update");
+      });
+    }
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+
+    function init() {
+      loadData();
+      computeBalances();
+      render();
+      wireUI();
+
+      track("page_view", { page: "curator_payouts" });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
