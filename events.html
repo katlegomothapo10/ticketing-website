@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f5f2">
+  <meta name="description" content="Browse every event on the platform. Filter by city, category, date, and price.">
+
+  <title>All Events · Ticketing App</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/navigation.css">
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/events.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header" id="siteHeader">
+    <nav class="navbar" aria-label="Main navigation">
+
+      <a href="index.html" class="logo" aria-label="Ticketing App home">
+        <span class="logo-mark" aria-hidden="true">TA</span>
+        <span class="logo-text">Ticketing<span>App</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Discover</a></li>
+        <li><a href="events.html" class="nav-link">Events</a></li>
+        <li><a href="venues.html" class="nav-link">Venues</a></li>
+        <li><a href="curator/index.html" class="nav-link">For organizers</a></li>
+      </ul>
+
+      <div class="nav-actions">
+
+        <button class="nav-search" aria-label="Search events">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+
+        <a href="account.html" class="nav-auth">Log in</a>
+
+        <a href="curator/create-event.html" class="nav-cta">
+          Create an event
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobileDrawer"
+        >
+          <span class="nav-toggle-icon" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+
+      </div>
+
+    </nav>
+  </header>
+
+  <!-- ============================================================
+       MOBILE DRAWER
+       ============================================================ -->
+  <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+  <aside
+    class="mobile-drawer"
+    id="mobileDrawer"
+    aria-label="Mobile navigation"
+    aria-hidden="true"
+  >
+    <div class="mobile-drawer-header">
+      <span class="logo-text" style="font-weight:700;">Menu</span>
+      <button class="mobile-drawer-close" id="navClose" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="mobile-drawer-body">
+      <ul class="mobile-nav-list">
+        <li><a href="index.html" class="mobile-nav-link">Discover</a></li>
+        <li><a href="events.html" class="mobile-nav-link">Events</a></li>
+        <li><a href="venues.html" class="mobile-nav-link">Venues</a></li>
+        <li><a href="curator/index.html" class="mobile-nav-link">For organizers</a></li>
+        <li><a href="account.html" class="mobile-nav-link">Log in</a></li>
+      </ul>
+
+      <div class="mobile-actions">
+        <a href="curator/create-event.html" class="btn btn-primary btn-block">
+          Create an event
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN
+       ============================================================ -->
+  <main>
+
+    <!-- ============================================================
+         EVENTS HEADER
+         ============================================================ -->
+    <section class="events-header">
+      <div class="container">
+
+        <div class="events-header-top">
+
+          <div>
+            <span class="eyebrow">Discover</span>
+            <h1>All Events</h1>
+            <p>
+              Browse every event on the platform. Filter by city, category,
+              date, and price to find your next experience.
+            </p>
+          </div>
+
+          <div class="events-header-count">
+            <strong id="eventsResultCount">—</strong>
+            <span>events found</span>
+          </div>
+
+        </div>
+
+        <!-- SEARCH FORM -->
+        <form class="events-search" id="eventsSearchForm" role="search">
+          <div class="events-search-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              type="text"
+              id="eventsSearchInput"
+              placeholder="Search events, artists or venues"
+              aria-label="Search events"
+              autocomplete="off"
+            >
+          </div>
+
+          <div class="events-search-divider" aria-hidden="true"></div>
+
+          <div class="events-search-field" style="flex: 0 0 180px;">
+            <select id="eventsSearchCity" aria-label="Filter by city">
+              <option value="">All cities</option>
+              <!-- Populated by events.js -->
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            Search
+          </button>
+        </form>
+
+        <!-- ACTIVE FILTER PILLS (populated by events.js) -->
+        <div class="active-filters" id="activeFilters" style="display:none;"></div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         EVENTS LAYOUT
+         ============================================================ -->
+    <div class="container">
+
+      <!-- MOBILE FILTER TRIGGER -->
+      <button class="filters-mobile-trigger" id="filtersMobileTrigger" aria-label="Open filters">
+        <span>Filters</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+      <div class="events-layout">
+
+        <!-- ============================================================
+             FILTER SIDEBAR
+             ============================================================ -->
+        <aside class="filters-sidebar" aria-label="Event filters">
+
+          <!-- City -->
+          <div class="filter-group">
+            <button class="filter-group-header" type="button">
+              City
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="filter-group-body">
+              <label class="filter-option">
+                <input type="checkbox" data-filter-city="jhb">
+                <span class="filter-option-label">
+                  Johannesburg
+                  <span class="filter-option-count" data-count-city="jhb">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-city="cpt">
+                <span class="filter-option-label">
+                  Cape Town
+                  <span class="filter-option-count" data-count-city="cpt">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-city="dbn">
+                <span class="filter-option-label">
+                  Durban
+                  <span class="filter-option-count" data-count-city="dbn">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-city="pta">
+                <span class="filter-option-label">
+                  Pretoria
+                  <span class="filter-option-count" data-count-city="pta">—</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="filter-group">
+            <button class="filter-group-header" type="button">
+              Category
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="filter-group-body">
+              <label class="filter-option">
+                <input type="checkbox" data-filter-category="music">
+                <span class="filter-option-label">
+                  Music
+                  <span class="filter-option-count" data-count-category="music">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-category="nightlife">
+                <span class="filter-option-label">
+                  Nightlife
+                  <span class="filter-option-count" data-count-category="nightlife">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-category="sports">
+                <span class="filter-option-label">
+                  Sports
+                  <span class="filter-option-count" data-count-category="sports">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-category="theatre">
+                <span class="filter-option-label">
+                  Theatre
+                  <span class="filter-option-count" data-count-category="theatre">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-category="comedy">
+                <span class="filter-option-label">
+                  Comedy
+                  <span class="filter-option-count" data-count-category="comedy">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-category="family">
+                <span class="filter-option-label">
+                  Family
+                  <span class="filter-option-count" data-count-category="family">—</span>
+                </span>
+              </label>
+              <label class="filter-option">
+                <input type="checkbox" data-filter-category="business">
+                <span class="filter-option-label">
+                  Business
+                  <span class="filter-option-count" data-count-category="business">—</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="filter-group">
+            <button class="filter-group-header" type="button">
+              Price range
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="filter-group-body">
+              <div class="price-range">
+                <div class="price-range-inputs">
+                  <input
+                    type="number"
+                    id="filterMinPrice"
+                    placeholder="Min"
+                    min="0"
+                    step="50"
+                    aria-label="Minimum price"
+                  >
+                  <input
+                    type="number"
+                    id="filterMaxPrice"
+                    placeholder="Max"
+                    min="0"
+                    step="50"
+                    aria-label="Maximum price"
+                  >
+                </div>
+                <div class="price-range-track" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date -->
+          <div class="filter-group">
+            <button class="filter-group-header" type="button">
+              When
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="filter-group-body">
+              <div class="date-shortcuts">
+                <button class="date-shortcut" data-date-range="today" type="button">Today</button>
+                <button class="date-shortcut" data-date-range="week" type="button">This week</button>
+                <button class="date-shortcut" data-date-range="month" type="button">This month</button>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- ============================================================
+             RESULTS AREA
+             ============================================================ -->
+        <div>
+
+          <div class="results-header">
+
+            <div class="results-count" id="eventsResultsSummary">
+              Loading events…
+            </div>
+
+            <div class="flex gap-3" style="align-items:center; flex-wrap:wrap;">
+
+              <!-- View toggle -->
+              <div class="view-toggle" role="group" aria-label="View mode">
+                <button
+                  class="view-toggle-btn is-active"
+                  data-view="grid"
+                  type="button"
+                  aria-label="Grid view"
+                  title="Grid view"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                  </svg>
+                </button>
+                <button
+                  class="view-toggle-btn"
+                  data-view="list"
+                  type="button"
+                  aria-label="List view"
+                  title="List view"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M4 6h16M4 12h16M4 18h16"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Sort dropdown -->
+              <div class="sort-wrap">
+                <label for="eventsSort">Sort by</label>
+                <select id="eventsSort" aria-label="Sort events">
+                  <option value="date">Date (soonest)</option>
+                  <option value="price_asc">Price (low to high)</option>
+                  <option value="price_desc">Price (high to low)</option>
+                  <option value="popularity">Popularity</option>
+                </select>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Results grid — populated by events.js -->
+          <div class="results-grid" id="eventsResults" aria-live="polite">
+            <!-- JS renders cards here -->
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <div class="container">
+
+      <div>
+        <a href="index.html" class="logo">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+        <p class="site-footer-tagline">
+          Better ways to experience events. Ticketing, built for how
+          people actually show up.
+        </p>
+      </div>
+
+      <div>
+        <h4>Discover</h4>
+        <ul>
+          <li><a href="events.html">All events</a></li>
+          <li><a href="events.html?category=music">Music</a></li>
+          <li><a href="events.html?category=nightlife">Nightlife</a></li>
+          <li><a href="events.html?category=sports">Sports</a></li>
+          <li><a href="events.html?category=theatre">Theatre</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Organizers</h4>
+        <ul>
+          <li><a href="curator/index.html">Dashboard</a></li>
+          <li><a href="curator/create-event.html">Create an event</a></li>
+          <li><a href="curator/venue-studio.html">Venue Studio</a></li>
+          <li><a href="curator/finances.html">Financials</a></li>
+          <li><a href="curator/payouts.html">Payouts</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="container">
+      <div class="site-footer-bottom">
+        <span>© <span id="footerYear">2026</span> Ticketing App. All rights reserved.</span>
+        <span>Built for how events actually happen.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="js/currency.js"></script>
+  <script src="js/fees.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/events.js"></script>
+
+  <script>
+    // Auto-update footer year
+    (function () {
+      const el = document.getElementById("footerYear");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
+
+    // Enable debug in dev
+    // Analytics.enableDebug();
+    // Nav.enableDebug();
+    // Events.enableDebug();
+  </script>
+
+</body>
+</html>
