@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f5f2">
+  <meta name="description" content="Complete your ticket purchase securely.">
+
+  <title>Checkout · Ticketing App</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/navigation.css">
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/checkout.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header" id="siteHeader">
+    <nav class="navbar" aria-label="Main navigation">
+
+      <a href="index.html" class="logo" aria-label="Ticketing App home">
+        <span class="logo-mark" aria-hidden="true">TA</span>
+        <span class="logo-text">Ticketing<span>App</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Discover</a></li>
+        <li><a href="events.html" class="nav-link">Events</a></li>
+        <li><a href="venues.html" class="nav-link">Venues</a></li>
+        <li><a href="curator/index.html" class="nav-link">For organizers</a></li>
+      </ul>
+
+      <div class="nav-actions">
+
+        <a href="account.html" class="nav-auth">Log in</a>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobileDrawer"
+        >
+          <span class="nav-toggle-icon" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+
+      </div>
+
+    </nav>
+  </header>
+
+  <!-- ============================================================
+       MOBILE DRAWER
+       ============================================================ -->
+  <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+  <aside
+    class="mobile-drawer"
+    id="mobileDrawer"
+    aria-label="Mobile navigation"
+    aria-hidden="true"
+  >
+    <div class="mobile-drawer-header">
+      <span class="logo-text" style="font-weight:700;">Menu</span>
+      <button class="mobile-drawer-close" id="navClose" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="mobile-drawer-body">
+      <ul class="mobile-nav-list">
+        <li><a href="index.html" class="mobile-nav-link">Discover</a></li>
+        <li><a href="events.html" class="mobile-nav-link">Events</a></li>
+        <li><a href="venues.html" class="mobile-nav-link">Venues</a></li>
+        <li><a href="curator/index.html" class="mobile-nav-link">For organizers</a></li>
+        <li><a href="account.html" class="mobile-nav-link">Log in</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN
+       ============================================================ -->
+  <main>
+
+    <section class="checkout-page">
+      <div class="container">
+
+        <!-- ============================================================
+             HEADER
+             ============================================================ -->
+        <div class="checkout-header">
+
+          <ol class="breadcrumb">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="events.html">Events</a></li>
+            <li>Checkout</li>
+          </ol>
+
+          <h1>Complete your purchase</h1>
+          <p>
+            Review your selection and enter your details
+            to confirm your booking.
+          </p>
+
+        </div>
+
+        <!-- ============================================================
+             HOLD BANNER
+             ============================================================ -->
+        <div class="hold-banner" role="status" aria-live="polite">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <span>
+            Tables held for
+            <strong id="holdTimerValue">10:00</strong>
+            — complete checkout before time runs out.
+          </span>
+        </div>
+
+        <!-- ============================================================
+             CHECKOUT LAYOUT
+             ============================================================ -->
+        <div class="checkout-layout">
+
+          <!-- ============================================================
+               LEFT — FORM
+               ============================================================ -->
+          <div>
+
+            <!-- SECTION 1 — BUYER DETAILS -->
+            <div class="checkout-section">
+
+              <div class="checkout-section-header">
+                <span class="checkout-section-number" aria-hidden="true">1</span>
+                <div>
+                  <h2>Your details</h2>
+                  <p>We'll send your tickets to this email.</p>
+                </div>
+              </div>
+
+              <div class="checkout-form">
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="firstName">
+                      First name
+                      <span class="required" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      placeholder="Sipho"
+                      autocomplete="given-name"
+                      required
+                    >
+                    <span class="form-error-text">First name is required</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="lastName">
+                      Last name
+                      <span class="required" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      placeholder="Mokoena"
+                      autocomplete="family-name"
+                      required
+                    >
+                    <span class="form-error-text">Last name is required</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="email">
+                    Email address
+                    <span class="required" aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                  >
+                  <span class="form-hint">
+                    Your digital tickets will be sent here.
+                  </span>
+                  <span class="form-error-text">
+                    Please enter a valid email address
+                  </span>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone">Phone number</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="+27 82 123 4567"
+                    autocomplete="tel"
+                  >
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- SECTION 2 — PAYMENT -->
+            <div class="checkout-section">
+
+              <div class="checkout-section-header">
+                <span class="checkout-section-number" aria-hidden="true">2</span>
+                <div>
+                  <h2>Payment method</h2>
+                  <p>All transactions are secure and encrypted.</p>
+                </div>
+              </div>
+
+              <div class="payment-methods" role="radiogroup" aria-label="Payment method">
+
+                <label class="payment-method is-selected">
+                  <input type="radio" name="payment" value="payfast" checked>
+                  <span class="payment-method-icon" aria-hidden="true">💳</span>
+                  <span class="payment-method-info">
+                    <span class="payment-method-name">PayFast</span>
+                    <span class="payment-method-desc">Card, EFT, SnapScan, Mobicred</span>
+                  </span>
+                </label>
+
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="yoco">
+                  <span class="payment-method-icon" aria-hidden="true">⚡</span>
+                  <span class="payment-method-info">
+                    <span class="payment-method-name">Yoco</span>
+                    <span class="payment-method-desc">Fast card payments</span>
+                  </span>
+                </label>
+
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="stripe">
+                  <span class="payment-method-icon" aria-hidden="true">🌍</span>
+                  <span class="payment-method-info">
+                    <span class="payment-method-name">Stripe</span>
+                    <span class="payment-method-desc">International cards</span>
+                  </span>
+                </label>
+
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="peach">
+                  <span class="payment-method-icon" aria-hidden="true">🍑</span>
+                  <span class="payment-method-info">
+                    <span class="payment-method-name">Peach Payments</span>
+                    <span class="payment-method-desc">Card, Instant EFT</span>
+                  </span>
+                </label>
+
+              </div>
+
+              <!-- Card fields -->
+              <div class="card-fields is-visible" id="cardFields">
+
+                <div class="card-visual" aria-hidden="true">
+                  <div class="card-visual-top">
+                    <div class="card-visual-chip"></div>
+                    <div class="card-visual-brand">VISA</div>
+                  </div>
+                  <div class="card-visual-number" id="cardNumberDisplay">
+                    •••• •••• •••• ••••
+                  </div>
+                  <div class="card-visual-bottom">
+                    <div>
+                      <div class="card-visual-label">Card holder</div>
+                      <div class="card-visual-value" id="cardHolderDisplay">
+                        YOUR NAME
+                      </div>
+                    </div>
+                    <div>
+                      <div class="card-visual-label">Expires</div>
+                      <div class="card-visual-value" id="cardExpiryDisplay">
+                        MM/YY
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="checkout-form">
+
+                  <div class="form-group">
+                    <label for="cardNumber">
+                      Card number
+                      <span class="required" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="cardNumber"
+                      name="cardNumber"
+                      placeholder="1234 5678 9012 3456"
+                      inputmode="numeric"
+                      autocomplete="cc-number"
+                      maxlength="19"
+                    >
+                    <span class="form-error-text">
+                      Please enter a valid card number
+                    </span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="cardHolder">
+                      Card holder name
+                      <span class="required" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="cardHolder"
+                      name="cardHolder"
+                      placeholder="As shown on card"
+                      autocomplete="cc-name"
+                    >
+                    <span class="form-error-text">
+                      Card holder name is required
+                    </span>
+                  </div>
+
+                  <div class="card-fields-row">
+                    <div class="form-group">
+                      <label for="cardExpiry">
+                        Expiry
+                        <span class="required" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="cardExpiry"
+                        name="cardExpiry"
+                        placeholder="MM/YY"
+                        inputmode="numeric"
+                        autocomplete="cc-exp"
+                        maxlength="5"
+                      >
+                      <span class="form-error-text">
+                        Enter a valid expiry (MM/YY)
+                      </span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="cardCvc">
+                        CVC
+                        <span class="required" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="cardCvc"
+                        name="cardCvc"
+                        placeholder="123"
+                        inputmode="numeric"
+                        autocomplete="cc-csc"
+                        maxlength="4"
+                      >
+                      <span class="form-error-text">
+                        Enter a valid CVC
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ============================================================
+               RIGHT — ORDER SUMMARY
+               ============================================================ -->
+          <aside class="order-summary" aria-label="Order summary">
+
+            <div class="order-summary-header" id="orderHeader">
+              <h3>Order summary</h3>
+              <span class="badge" id="orderBadge">—</span>
+            </div>
+
+            <div class="order-summary-event" id="orderEvent">
+              <!-- Populated by checkout.js -->
+            </div>
+
+            <div class="order-summary-body" id="orderBody">
+              <!-- Populated by checkout.js -->
+            </div>
+
+            <div class="order-summary-footer" id="orderFooter">
+              <!-- Populated by checkout.js -->
+            </div>
+
+            <div class="checkout-trust">
+              <span class="checkout-trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                SSL encrypted
+              </span>
+              <span class="checkout-trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                Instant tickets
+              </span>
+              <span class="checkout-trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                Refund protection
+              </span>
+            </div>
+
+          </aside>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <div class="container">
+
+      <div>
+        <a href="index.html" class="logo">
+          <span class="logo-mark" aria-hidden="true">TA</span>
+          <span class="logo-text">Ticketing<span>App</span></span>
+        </a>
+        <p class="site-footer-tagline">
+          Better ways to experience events. Ticketing, built for how
+          people actually show up.
+        </p>
+      </div>
+
+      <div>
+        <h4>Discover</h4>
+        <ul>
+          <li><a href="events.html">All events</a></li>
+          <li><a href="events.html?category=music">Music</a></li>
+          <li><a href="events.html?category=nightlife">Nightlife</a></li>
+          <li><a href="events.html?category=sports">Sports</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Organizers</h4>
+        <ul>
+          <li><a href="curator/index.html">Dashboard</a></li>
+          <li><a href="curator/create-event.html">Create an event</a></li>
+          <li><a href="curator/venue-studio.html">Venue Studio</a></li>
+          <li><a href="curator/finances.html">Financials</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="container">
+      <div class="site-footer-bottom">
+        <span>© <span id="footerYear">2026</span> Ticketing App. All rights reserved.</span>
+        <span>Built for how events actually happen.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="js/currency.js"></script>
+  <script src="js/fees.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/checkout.js"></script>
+
+  <script>
+    // Auto-update footer year
+    (function () {
+      const el = document.getElementById("footerYear");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
+
+    // Optional: enable debug in dev
+    // Analytics.enableDebug();
+    // Nav.enableDebug();
+    // Checkout.enableDebug();
+  </script>
+
+</body>
+</html>
