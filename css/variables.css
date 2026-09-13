@@ -1,0 +1,235 @@
+/* ============================================================
+   TICKETING APP — DESIGN SYSTEM
+   File: variables.css
+   Purpose: Single source of truth for all design tokens
+   ============================================================ */
+
+:root {
+
+  /* ============================================================
+     1. COLOR SYSTEM
+     ============================================================ */
+
+  /* Backgrounds */
+  --color-bg:              #f6f5f2;   /* Page background — warm off-white */
+  --color-bg-alt:          #efece6;   /* Alternate section background */
+  --color-surface:         #ffffff;   /* Cards, panels, modals */
+  --color-surface-2:       #faf9f6;   /* Subtle surface variations */
+  --color-dark:            #151515;   /* Dark sections, headers, footers */
+  --color-dark-soft:       #242424;   /* Hover states on dark surfaces */
+
+  /* Text */
+  --color-text:            #161616;   /* Primary text — near black */
+  --color-text-muted:      #727272;   /* Secondary text, captions */
+  --color-text-faint:      #a8a8a8;   /* Placeholder, disabled text */
+  --color-text-inverse:    #ffffff;   /* Text on dark backgrounds */
+
+  /* Brand — Gold */
+  --color-accent:          #b8955a;   /* Primary brand gold */
+  --color-accent-dark:     #92713d;   /* Hover/pressed state */
+  --color-accent-light:    #d4b87a;   /* Subtle highlights */
+  --color-accent-glow:     rgba(184, 149, 90, 0.15); /* Shadows/glows */
+
+  /* Borders */
+  --color-border:          #e5e3de;   /* Default border */
+  --color-border-strong:   #d0ccc4;   /* Emphasized borders */
+  --color-border-focus:    #b8955a;   /* Focus rings */
+
+  /* Status — Semantic */
+  --color-success:         #3d7a5a;   /* Available, confirmed, paid */
+  --color-success-bg:      #eaf3ee;   /* Success background tint */
+  --color-warning:         #c28a28;   /* Reserved, held, pending */
+  --color-warning-bg:      #faf3e3;   /* Warning background tint */
+  --color-danger:          #b84a4a;   /* Sold out, cancelled, error */
+  --color-danger-bg:       #f8eded;   /* Danger background tint */
+  --color-info:            #4a6b8a;   /* Informational */
+  --color-info-bg:         #eef2f6;   /* Info background tint */
+
+  /* Ticket Tiers — matching package colors */
+  --color-platinum:        #d8d0c4;
+  --color-gold-tier:       #cba34b;
+  --color-silver:          #b8c0c8;
+  --color-bronze:          #b28b70;
+
+  /* Overlays */
+  --color-overlay:         rgba(0, 0, 0, 0.6);
+  --color-overlay-soft:    rgba(0, 0, 0, 0.3);
+  --color-overlay-light:   rgba(255, 255, 255, 0.9);
+
+  /* ============================================================
+     2. TYPOGRAPHY
+     ============================================================ */
+
+  /* Font Families */
+  --font-sans:             'Inter', -apple-system, BlinkMacSystemFont,
+                           'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif:            'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-mono:             'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* Font Sizes — Fluid where appropriate */
+  --text-2xs:              0.625rem;   /* 10px */
+  --text-xs:               0.6875rem;  /* 11px */
+  --text-sm:               0.8125rem;  /* 13px */
+  --text-base:             0.9375rem;  /* 15px */
+  --text-md:               1rem;       /* 16px */
+  --text-lg:               1.125rem;   /* 18px */
+  --text-xl:               1.375rem;   /* 22px */
+  --text-2xl:              1.75rem;    /* 28px */
+  --text-3xl:              2.25rem;    /* 36px */
+  --text-4xl:              3rem;       /* 48px */
+  --text-5xl:              3.75rem;    /* 60px */
+  --text-6xl:              4.5rem;     /* 72px */
+
+  /* Hero Display — for big statements */
+  --text-hero:             clamp(2.5rem, 7vw, 5.5rem);
+  --text-hero-sm:          clamp(2rem, 5vw, 3.5rem);
+
+  /* Font Weights */
+  --weight-light:          300;
+  --weight-regular:        400;
+  --weight-medium:         500;
+  --weight-semibold:       600;
+  --weight-bold:           700;
+
+  /* Line Heights */
+  --leading-tight:         1.05;
+  --leading-snug:          1.2;
+  --leading-normal:        1.5;
+  --leading-relaxed:       1.7;
+
+  /* Letter Spacing */
+  --tracking-tight:        -0.03em;
+  --tracking-normal:       0;
+  --tracking-wide:         0.05em;
+  --tracking-wider:        0.1em;
+  --tracking-widest:       0.15em;
+
+  /* ============================================================
+     3. SPACING SCALE
+     ============================================================ */
+
+  --space-1:               0.25rem;    /* 4px */
+  --space-2:               0.5rem;     /* 8px */
+  --space-3:               0.75rem;    /* 12px */
+  --space-4:               1rem;       /* 16px */
+  --space-5:               1.25rem;    /* 20px */
+  --space-6:               1.5rem;     /* 24px */
+  --space-8:               2rem;       /* 32px */
+  --space-10:              2.5rem;     /* 40px */
+  --space-12:              3rem;       /* 48px */
+  --space-16:              4rem;       /* 64px */
+  --space-20:              5rem;       /* 80px */
+  --space-24:              6rem;       /* 96px */
+  --space-32:              8rem;       /* 128px */
+
+  /* ============================================================
+     4. BORDER RADIUS
+     ============================================================ */
+
+  --radius-xs:             4px;
+  --radius-sm:             8px;
+  --radius-md:             14px;
+  --radius-lg:             20px;
+  --radius-xl:             28px;
+  --radius-full:           9999px;     /* Pills, circular */
+
+  /* ============================================================
+     5. SHADOWS
+     ============================================================ */
+
+  --shadow-xs:             0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm:             0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md:             0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg:             0 10px 40px rgba(0, 0, 0, 0.08);
+  --shadow-xl:             0 20px 60px rgba(0, 0, 0, 0.12);
+  --shadow-accent:         0 8px 24px rgba(184, 149, 90, 0.15);
+
+  /* Focus ring */
+  --ring-focus:            0 0 0 3px rgba(184, 149, 90, 0.25);
+
+  /* ============================================================
+     6. TRANSITIONS & ANIMATIONS
+     ============================================================ */
+
+  --transition-fast:       0.15s ease;
+  --transition-base:       0.25s ease;
+  --transition-slow:       0.4s ease;
+  --transition-spring:     0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --ease-out:              cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:           cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ============================================================
+     7. LAYOUT
+     ============================================================ */
+
+  --max-width:             1280px;
+  --max-width-narrow:      960px;
+  --max-width-wide:        1440px;
+  --max-width-prose:       640px;
+
+  --nav-height:            72px;
+  --sidebar-width:         260px;
+  --inspector-width:       320px;
+
+  /* ============================================================
+     8. Z-INDEX SCALE
+     ============================================================ */
+
+  --z-base:                1;
+  --z-dropdown:            100;
+  --z-sticky:              200;
+  --z-nav:                 500;
+  --z-overlay:             900;
+  --z-modal:               1000;
+  --z-toast:               1100;
+  --z-tooltip:             1200;
+
+  /* ============================================================
+     9. BREAKPOINTS (documentation only — use in media queries)
+     ============================================================ */
+
+  /*
+     Mobile:        0     – 480px
+     Mobile L:      481px – 640px
+     Tablet:        641px – 900px
+     Laptop:        901px – 1100px
+     Desktop:       1101px – 1400px
+     Wide:          1401px+
+  */
+
+  /* ============================================================
+     10. COMPONENT-SPECIFIC TOKENS
+     ============================================================ */
+
+  /* Buttons */
+  --btn-height-sm:         36px;
+  --btn-height-md:         44px;
+  --btn-height-lg:         52px;
+  --btn-padding-x-sm:      var(--space-4);
+  --btn-padding-x-md:      var(--space-6);
+  --btn-padding-x-lg:      var(--space-8);
+
+  /* Inputs */
+  --input-height:          48px;
+  --input-padding-x:       var(--space-4);
+
+  /* Cards */
+  --card-padding:          var(--space-6);
+  --card-padding-lg:       var(--space-8);
+
+  /* Navigation */
+  --nav-link-padding:      var(--space-3) var(--space-4);
+
+  /* Venue map tokens */
+  --table-size-sm:         70px;
+  --table-size-md:         100px;
+  --table-size-lg:         140px;
+  --seat-size:             14px;
+  --chair-size:            12px;
+
+}
+
+/* ============================================================
+   END OF FILE — variables.css
+   ============================================================ */
