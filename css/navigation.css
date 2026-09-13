@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test — Navigation</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/navigation.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header" id="siteHeader">
+    <nav class="navbar">
+
+      <a href="#" class="logo">
+        <span class="logo-mark">TA</span>
+        <span class="logo-text">Ticketing<span>App</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#" class="nav-link is-active">Discover</a></li>
+        <li><a href="#" class="nav-link">Events</a></li>
+        <li><a href="#" class="nav-link">Venues</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="nav-search" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+        <a href="#" class="nav-auth">Log in</a>
+        <a href="#" class="nav-cta">
+          Create an event
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+          <span class="nav-toggle-icon">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+      </div>
+
+    </nav>
+  </header>
+
+  <!-- MOBILE DRAWER -->
+  <div class="nav-overlay" id="navOverlay"></div>
+  <aside class="mobile-drawer" id="mobileDrawer">
+    <div class="mobile-drawer-header">
+      <span class="logo-text" style="font-weight:700;">Menu</span>
+      <button class="mobile-drawer-close" id="navClose" aria-label="Close menu">✕</button>
+    </div>
+    <div class="mobile-drawer-body">
+      <ul class="mobile-nav-list">
+        <li><a href="#" class="mobile-nav-link">Discover</a></li>
+        <li><a href="#" class="mobile-nav-link">Events</a></li>
+        <li><a href="#" class="mobile-nav-link">Venues</a></li>
+        <li><a href="#" class="mobile-nav-link">Log in</a></li>
+      </ul>
+      <div class="mobile-actions">
+        <a href="#" class="btn btn-primary btn-block">Create an event</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="container section">
+    <span class="eyebrow">Navigation Test</span>
+    <h1>Header Test Page</h1>
+    <p>Scroll down to see the sticky header change. Resize your browser below 900px to see the hamburger menu appear.</p>
+
+    <div style="height: 200vh; margin-top: 40px;">
+      <p class="text-muted">↓ Scroll to test sticky header ↓</p>
+    </div>
+  </main>
+
+  <!-- TEST SCRIPT (temporary — will be replaced in navigation.js) -->
+  <script>
+    const header = document.getElementById("siteHeader");
+    const navToggle = document.getElementById("navToggle");
+    const navClose = document.getElementById("navClose");
+    const drawer = document.getElementById("mobileDrawer");
+    const overlay = document.getElementById("navOverlay");
+
+    // Sticky header on scroll
+    window.addEventListener("scroll", () => {
+      header.classList.toggle("is-scrolled", window.scrollY > 10);
+    });
+
+    // Open/close mobile drawer
+    function openDrawer() {
+      drawer.classList.add("is-open");
+      overlay.classList.add("is-open");
+      navToggle.classList.add("is-open");
+      document.body.classList.add("nav-open");
+    }
+    function closeDrawer() {
+      drawer.classList.remove("is-open");
+      overlay.classList.remove("is-open");
+      navToggle.classList.remove("is-open");
+      document.body.classList.remove("nav-open");
+    }
+
+    navToggle.addEventListener("click", () => {
+      drawer.classList.contains("is-open") ? closeDrawer() : openDrawer();
+    });
+    navClose.addEventListener("click", closeDrawer);
+    overlay.addEventListener("click", closeDrawer);
+  </script>
+
+</body>
+</html>
